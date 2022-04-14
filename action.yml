@@ -1,0 +1,33 @@
+name: 'The title of your GitHub Action'
+description: 'The description of your GitHub Action'
+branding:
+  icon: activity
+  color: orange
+inputs:
+  releaseStreams:
+    description:
+      "(Comma-separated list of) release streams to consider when determining the latest version. (Possible values: 'Stable', 'LTS', 'Beta', 'Alpha') [example: 'Stable', 'LTS,Stable', 'Stable,Beta,Alpha']"
+    required: true
+  projectPath:
+    description:
+      "Path to the Unity project root, if it's not the root of the repository this action runs on [example: 'unity-project', 'projects/game1']"
+    required: false
+    default: '/github/workspace'
+outputs:
+  has-never-version:
+    description:
+      'A boolean value, indicating whether or not the current version is outdated.'	
+  current-unity-version:
+    description:
+      'The version of Unity of the project inside projectPath.'
+  newest-unity-version:
+    description:
+      'The newest available version of the specified release streams (might be identical to current-unity-version).'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+  - '-r'
+  - ${{ inputs.releaseStreams }}
+  - '-p'
+  - ${{ inputs.projectPath }}
