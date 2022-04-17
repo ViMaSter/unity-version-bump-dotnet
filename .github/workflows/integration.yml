@@ -94,7 +94,7 @@ jobs:
           releaseStreams: ${{ matrix.releaseStreams }}
 
   failsIfFolderDoesNotExist:
-    name: Fails if folder does not exist
+    name: Fails if implicit root folder does not exist
     needs: [setupCache]
     runs-on: ubuntu-latest
     steps:
@@ -118,7 +118,7 @@ jobs:
               core.setFailed('The previous step should fail')
         
   failsIfSubfolderDoesNotExist:
-    name: Fails if folder does not exist
+    name: Fails if specified sub folder does not exist
     needs: [setupCache]
     runs-on: ubuntu-latest
     steps:
