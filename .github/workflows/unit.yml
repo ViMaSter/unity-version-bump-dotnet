@@ -61,9 +61,7 @@ jobs:
     
     - name: Test
       run: |
-        dotnet test \
-          UnityVersionBump.Core.Tests/UnityVersionBump.Core.Tests.csproj \
-          --logger "trx;LogFileName=test-results.trx"
+        dotnet test UnityVersionBump.Core.Tests/UnityVersionBump.Core.Tests.csproj --logger "trx;LogFileName=test-results.trx"
 
     - name: Generate test report
       uses: dorny/test-reporter@v1
