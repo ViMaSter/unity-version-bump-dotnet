@@ -14,8 +14,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  rootWithLTSStable:
-    name: Root with LTS Stable
+  core:
+    name: Release stream combinations
+    strategy:
+      matrix:
+        releaseStreams: [
+          # Excluded, as it is not guaranteed these builds are available
+          # 'Alpha',
+          # 'Beta',
+          # 'Patch',
+          'Stable',
+          'LTS',
+          'Alpha,Beta',
+          'Alpha,Stable',
+          'Alpha,Patch',
+          'Alpha,LTS',
+          'Beta,Stable',
+          'Beta,Patch',
+          'Beta,LTS',
+          'Stable,Patch',
+          'Stable,LTS',
+          'Patch,LTS',
+          'Alpha,Beta,Stable',
+          'Alpha,Beta,Patch',
+          'Alpha,Beta,LTS',
+          'Alpha,Stable,Patch',
+          'Alpha,Stable,LTS',
+          'Alpha,Patch,LTS',
+          'Beta,Stable,Patch',
+          'Beta,Stable,LTS',
+          'Beta,Patch,LTS',
+          'Stable,Patch,LTS',
+          'Alpha,Beta,Stable,Patch',
+          'Alpha,Beta,Stable,LTS',
+          'Alpha,Beta,Patch,LTS',
+          'Alpha,Stable,Patch,LTS',
+          'Beta,Stable,Patch,LTS',
+          'Alpha,Beta,Stable,Patch,LTS'
+        ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout test fixture
@@ -28,33 +64,17 @@ jobs:
         with:
           path: action
 
-      - name: Run action
+      - name: Run action in root with ${{ matrix.releaseStreams }}
         uses: ./action/
-        id: updateCheck
+        with:
+          releaseStreams: ${{ matrix.releaseStreams }}
+
+      - name: Run action in subfolder with ${{ matrix.releaseStreams }}
+        uses: ./action/
         with:
           projectPath: subfolder
-          releaseStreams: Stable,LTS
-        
-  subfolderWithLTSStable:
-    name: Subfolder with LTS Stable
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout test fixture
-        uses: actions/checkout@v2
-        with:
-          repository: ViMaSter/unity-version-bump-dotnet-test-fixture
+          releaseStreams: ${{ matrix.releaseStreams }}
 
-      - name: Checkout action
-        uses: actions/checkout@v2
-        with:
-          path: action
-
-      - name: Run action
-        uses: ./action/
-        id: updateCheck
-        with:
-          releaseStreams: Stable,LTS
-        
   failsIfFolderDoesNotExist:
     name: Fails if folder does not exist
     runs-on: ubuntu-latest
