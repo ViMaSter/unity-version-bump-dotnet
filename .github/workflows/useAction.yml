@@ -1,4 +1,4 @@
-name: Generate game builds
+name: Use action (smoke test)
 on:
   push:
   pull_request:
