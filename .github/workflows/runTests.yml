@@ -29,5 +29,15 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+    - name: Test and collect code coverage
+      run: dotnet test UnityVersionBump.Core.Tests/UnityVersionBump.Core.Tests.csproj \
+             --no-build \
+             --verbosity normal \
+             --results-directory "${{ github.workspace }}/TestResults" \
+             /p:CollectCoverage=true \
+             /p:CoverletOutputFormat=opencover
+
+    - name: Upload test coverage
+      uses: codecov/codecov-action@v1
+      with:
+        flags: ${{ matrix.framework }}
