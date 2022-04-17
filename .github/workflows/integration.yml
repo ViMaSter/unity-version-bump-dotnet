@@ -1,4 +1,4 @@
-name: Use action (smoke test)
+name: Integration tests
 on:
   push:
   pull_request:
@@ -27,7 +27,7 @@ jobs:
       - name: Checkout test fixture
         uses: actions/checkout@v2
         with:
-          repository: ViMaSter/unity-version-bump-dotnet-test-fixture
+          repository: ViMaSter/unity-version-bump-test-fixture
 
       - name: Checkout action
         uses: actions/checkout@v2
