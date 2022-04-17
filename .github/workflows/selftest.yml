@@ -34,14 +34,6 @@ jobs:
         with:
           projectPath: subfolder
           releaseStreams: Stable,LTS
-
-      - name: Success
-        if: ${{steps.updateCheck.outputs.has-never-version}}
-        run: echo 'Success!'
-
-      - name: Failure
-        if: ${{!steps.updateCheck.outputs.has-never-version}}
-        run: echo 'Failure!'
         
   subfolderWithLTSStable:
     name: Subfolder with LTS Stable
@@ -62,11 +54,50 @@ jobs:
         id: updateCheck
         with:
           releaseStreams: Stable,LTS
+        
+  failsIfFolderDoesNotExist:
+    name: Fails if folder does not exist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout action
+        uses: actions/checkout@v2
+        with:
+          path: action
 
-      - name: Success
+      - name: Run action
+        uses: ./action/
+        id: updateCheck
+        continue-on-error: true
+        with:
+          releaseStreams: Stable,LTS
+
+      - name: Mark pipeline as failed, if previous step has succeeded
         if: ${{steps.updateCheck.outputs.has-never-version}}
-        run: echo 'Success!'
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('The previous step should fail')
+        
+  failsIfSubfolderDoesNotExist:
+    name: Fails if folder does not exist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout action
+        uses: actions/checkout@v2
+        with:
+          path: action
 
-      - name: Failure
-        if: ${{!steps.updateCheck.outputs.has-never-version}}
-        run: echo 'Failure!'
+      - name: Run action
+        uses: ./action/
+        id: updateCheck
+        continue-on-error: true
+        with:
+          projectPath: subfolder
+          releaseStreams: Stable,LTS
+
+      - name: Mark pipeline as failed, if previous step has succeeded
+        if: ${{steps.updateCheck.outputs.has-never-version}}
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('The previous step should fail')
