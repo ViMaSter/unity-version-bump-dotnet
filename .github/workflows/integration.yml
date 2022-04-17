@@ -133,7 +133,7 @@ jobs:
         id: updateCheck
         continue-on-error: true
         with:
-          projectPath: subfolder
+          projectPath: non-existent
           releaseStreams: Stable,LTS
 
       - name: Mark pipeline as failed, if previous step has succeeded
