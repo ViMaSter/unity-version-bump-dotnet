@@ -1,0 +1,74 @@
+name: Build, Test, Cover
+
+on:
+  push:
+  pull_request:
+
+env:
+  DOTNET_VERSION: '6.0'
+
+jobs:
+  code-coverage:
+    name: Code coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Collect test code coverage
+      run: |
+        dotnet test \
+          UnityVersionBump.Core.Tests/UnityVersionBump.Core.Tests.csproj \
+          /p:CollectCoverage=true \
+          /p:CoverletOutputFormat=opencover
+
+    - name: Upload test code coverage report to codecov.io
+      uses: codecov/codecov-action@v1
+
+  build-and-test:
+    name: Build and test on ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Test
+      run: |
+        dotnet test \
+          UnityVersionBump.Core.Tests/UnityVersionBump.Core.Tests.csproj \
+          --logger "trx;LogFileName=test-results.trx"
+
+    - name: Generate test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
+      with:
+        name: ${{matrix.os}} Tests
+        path: UnityVersionBump.Core.Tests/TestResults/test-results.trx
+        reporter: dotnet-trx
