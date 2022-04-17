@@ -1,0 +1,72 @@
+name: Generate game builds
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      createRelease:
+        description: 'Upload to GitHub Releases and itch.io?'
+        required: true
+        default: 'false'
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rootWithLTSStable:
+    name: Root with LTS Stable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout test fixture
+        uses: actions/checkout@v2
+        with:
+          repository: ViMaSter/unity-version-bump-dotnet-test-fixture
+
+      - name: Checkout action
+        uses: actions/checkout@v2
+        with:
+          path: action
+
+      - name: Run action
+        uses: ./action/
+        id: updateCheck
+        with:
+          projectPath: subfolder
+          releaseStreams: Stable,LTS
+
+      - name: Success
+        if: ${{steps.updateCheck.outputs.has-never-version}}
+        run: echo 'Success!'
+
+      - name: Failure
+        if: ${{!steps.updateCheck.outputs.has-never-version}}
+        run: echo 'Failure!'
+        
+  subfolderWithLTSStable:
+    name: Subfolder with LTS Stable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout test fixture
+        uses: actions/checkout@v2
+        with:
+          repository: ViMaSter/unity-version-bump-dotnet-test-fixture
+
+      - name: Checkout action
+        uses: actions/checkout@v2
+        with:
+          path: action
+
+      - name: Run action
+        uses: ./action/
+        id: updateCheck
+        with:
+          releaseStreams: Stable,LTS
+
+      - name: Success
+        if: ${{steps.updateCheck.outputs.has-never-version}}
+        run: echo 'Success!'
+
+      - name: Failure
+        if: ${{!steps.updateCheck.outputs.has-never-version}}
+        run: echo 'Failure!'
