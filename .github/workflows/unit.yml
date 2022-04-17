@@ -2,7 +2,10 @@ name: Unit tests
 
 on:
   push:
+    - main
   pull_request:
+    - main
+  workflow_dispatch:
 
 env:
   DOTNET_VERSION: '6.0'

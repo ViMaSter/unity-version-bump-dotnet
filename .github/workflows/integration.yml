@@ -1,13 +1,10 @@
 name: Integration tests
 on:
   push:
+    - main
   pull_request:
+    - main
   workflow_dispatch:
-    inputs:
-      createRelease:
-        description: 'Upload to GitHub Releases and itch.io?'
-        required: true
-        default: 'false'
 
 concurrency:
   group: ${{ github.ref }}
