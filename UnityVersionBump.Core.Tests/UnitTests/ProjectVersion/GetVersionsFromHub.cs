@@ -25,6 +25,11 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         [TestCaseSource(nameof(AllStreams))]
         public void GetsVersionForSpecificStream(Core.UnityVersion.ReleaseStreamType stream)
         {
+            if (stream == Core.UnityVersion.ReleaseStreamType.LTS)
+            {
+                Assert.IsTrue(Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[]{ stream }).IsLTS);
+                return;
+            }
             Assert.AreEqual(stream, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[]{ stream }).ReleaseStream);
         }
 
@@ -35,7 +40,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         }
 
         [TestCase]
-        public void GetsVersionForStreamSubset()
+        public void SubsetOnlyContainsExpectedReleases()
         {
             var subset = new List<Core.UnityVersion.ReleaseStreamType>();
             foreach (var releaseStreamType in AllStreams)
