@@ -5,6 +5,7 @@ namespace UnityVersionBump.Core;
 
 public class UnityVersion : IComparable
 {
+
     #region IComparable
     public override bool Equals(object? rhs)
     {
@@ -56,6 +57,7 @@ public class UnityVersion : IComparable
     }
 
     private readonly Regex _versionNameMatcher = new("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<channel>\\w)?(?<build>\\d+)?");
+    private readonly Regex _revisionValidator = new("^[a-f0-9]{12}$");
 
     private readonly Dictionary<VersionPart, int> _versionPartMaximumLength = new()
     {
@@ -68,17 +70,24 @@ public class UnityVersion : IComparable
 
     private readonly Dictionary<VersionPart, int> _currentValues = new();
 
+    public string Revision { get; }
     public bool IsLTS { get; }
     public ReleaseStreamType ReleaseStream => (ReleaseStreamType)_currentValues[VersionPart.Channel];
 
-    public UnityVersion(string fullVersion, bool isLTS)
+    public UnityVersion(string fullVersion, string revision, bool isLTS)
     {
+        if (!_revisionValidator.IsMatch(revision))
+        {
+            throw new InvalidRevisionSyntaxException(revision);
+        }
+
+        Revision = revision;
         IsLTS = isLTS;
 
         var matchAttempt = _versionNameMatcher.Match(fullVersion);
         if (!matchAttempt.Success)
         {
-            throw new InvalidSyntaxException(fullVersion);
+            throw new InvalidVersionSyntaxException(fullVersion);
         }
 
         foreach (var (partName, maximumLength) in _versionPartMaximumLength)
@@ -138,6 +147,7 @@ public class UnityVersion : IComparable
     /// </summary>
     /// <returns>A string representation of this version identical to the format used by the Unity launcher of "About Unity" menu</returns>
     /// <see cref="ToString()"/>
+    /// <see cref="ToUnityStringWithRevision()"/>
     public string ToUnityString()
     {
         var requiredBlock = $"{_currentValues[VersionPart.Major]}.{_currentValues[VersionPart.Minor]}.{_currentValues[VersionPart.Patch]}";
@@ -158,13 +168,25 @@ public class UnityVersion : IComparable
     }
 
     /// <summary>
+    /// Returns a string representation of this version with revision hash used by ProjectVersion.txt
+    /// </summary>
+    /// <returns>A string representation of this version with revision hash used by ProjectVersion.txt</returns>
+    /// <see cref="ToString()"/>
+    /// <see cref="ToUnityString()"/>
+    public string ToUnityStringWithRevision()
+    {
+        return $"{ToUnityString()} ({Revision})";
+    }
+
+    /// <summary>
     /// Returns a string representing this version in both a Unity friendly string and the raw <see cref="GetComparable()"/>
     /// </summary>
     /// <returns>A string representing this version in both a Unity friendly string and the raw <see cref="GetComparable()"/></returns>
     /// <see cref="ToUnityString()"/>
+    /// <see cref="ToUnityStringWithRevision()"/>
     public override string ToString()
     {
-        return $"{ToUnityString()} ({GetComparable()})";
+        return $"{ToUnityStringWithRevision()} ({GetComparable()})";
     }
     #endregion
 }

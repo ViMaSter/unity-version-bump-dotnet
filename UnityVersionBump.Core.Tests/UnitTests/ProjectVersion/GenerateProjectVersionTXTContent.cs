@@ -3,14 +3,14 @@ using NUnit.Framework;
 
 namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
 {
-    internal class FromProjectVersionTXT
+    internal class GenerateProjectVersionTXTContent
     {
         [TestCase]
-        public void ReturnsVersionAsString()
+        public void InputEqualsOutput()
         {
             var projectVersionTxt = new StreamReader(GetType().Assembly.GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.Resources.ProjectVersion.txt")!).ReadToEnd();
             var unityVersion = Core.ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
-            Assert.AreEqual("2020.3.15f2 (6cf78cb77498)", unityVersion.ToUnityStringWithRevision());
+            Assert.AreEqual(projectVersionTxt, Core.ProjectVersion.GenerateProjectVersionTXTContent(unityVersion));
         }
     }
 }

@@ -8,7 +8,7 @@ using UnityVersionBump.Core.Tests.Stubs;
 
 namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
 {
-    class GetVersionsFromHub
+    internal class GetVersionsFromHub
     {
         private readonly HttpClient _stubHttpClient = new(new LocalFileMessageHandler("UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.Resources.ExpectedHTTPResponse.json"));
 

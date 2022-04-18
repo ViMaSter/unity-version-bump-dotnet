@@ -1,8 +1,8 @@
 ﻿namespace UnityVersionBump.Core.Exceptions;
 
-public class InvalidSyntaxException : Exception
+public class InvalidVersionSyntaxException : Exception
 {
-    public InvalidSyntaxException(string fullVersion)
+    public InvalidVersionSyntaxException(string fullVersion)
         : base($"Cannot parse version string '{fullVersion}'")
     {
     }

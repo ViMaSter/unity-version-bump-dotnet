@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UnityVersionBump.Core.Exceptions;
 
 namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion;
@@ -17,7 +16,7 @@ public class ErrorHandling
     public void ThrowsIfVersionIsTooLong(string invalidUnityVersion, Core.UnityVersion.VersionPart failingPart)
     {
         var exception = Assert.Throws<MismatchingLengthException>(() => {
-            _ = new Core.UnityVersion(invalidUnityVersion, false);
+            _ = new Core.UnityVersion(invalidUnityVersion, "1234567890ab", false);
         });
         Assert.NotNull(exception);
         StringAssert.Contains(failingPart.ToString(), exception!.Message);
@@ -39,8 +38,8 @@ public class ErrorHandling
     [TestCaseSource(nameof(_invalidSyntax))]
     public void ThrowsIfInvalidVersionFormat(string invalidFormat)
     {
-        var exception = Assert.Throws<InvalidSyntaxException>(() => {
-            _ = new Core.UnityVersion(invalidFormat, false);
+        var exception = Assert.Throws<InvalidVersionSyntaxException>(() => {
+            _ = new Core.UnityVersion(invalidFormat, "1234567890ab", false);
         });
         Assert.NotNull(exception);
         StringAssert.Contains(invalidFormat, exception!.Message);
@@ -75,7 +74,7 @@ public class ErrorHandling
     public void ThrowsIfUnsupportedChannel(char shorthand)
     {
         var exception = Assert.Throws<UnsupportedReleaseStream>(() => {
-            _ = new Core.UnityVersion($"2021.1.0{shorthand}12", false);
+            _ = new Core.UnityVersion($"2021.1.0{shorthand}12", "1234567890ab", false);
         });
         Assert.NotNull(exception);
         StringAssert.Contains($"'{shorthand}'", exception!.Message);
