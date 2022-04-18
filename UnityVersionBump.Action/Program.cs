@@ -32,14 +32,14 @@ await host.RunAsync();
 static async Task StartAnalysisAsync(ActionInputs inputs)
 {
     var projectVersionTxt = File.ReadAllText(Path.Join(inputs.ProjectPath, "ProjectSettings", "ProjectVersion.txt"));
-    var currentVersion = UnityVersionBump.Core.ProjectVersion.DetermineUnityVersion(projectVersionTxt, false);
+    var currentVersion = UnityVersionBump.Core.ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
     var highestVersion = UnityVersionBump.Core.ProjectVersion.GetLatestFromHub(new(), inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>));
 
-    Console.WriteLine($"echo Current Unity Version: {currentVersion.ToUnityString()}");
-    Console.WriteLine($"echo Latest Unity Version:  {highestVersion.ToUnityString()}");
+    Console.WriteLine($"echo Current Unity Version: {currentVersion.ToUnityStringWithRevision()}");
+    Console.WriteLine($"echo Latest Unity Version:  {highestVersion.ToUnityStringWithRevision()}");
     Console.WriteLine($"::set-output name=has-never-version::{highestVersion.GetComparable()>currentVersion.GetComparable()}");
-    Console.WriteLine($"::set-output name=current-unity-version::{currentVersion.ToUnityString()}");
-    Console.WriteLine($"::set-output name=newest-unity-version::{highestVersion.ToUnityString()}");
+    Console.WriteLine($"::set-output name=current-unity-version::{currentVersion.ToUnityStringWithRevision()}");
+    Console.WriteLine($"::set-output name=newest-unity-version::{highestVersion.ToUnityStringWithRevision()}");
 
     await Task.CompletedTask;
 
