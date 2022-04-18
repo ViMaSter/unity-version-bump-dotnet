@@ -21,7 +21,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./
-          key: repo-cache-${{ github.sha }}
+          key: repo-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Checkout test fixture
         uses: actions/checkout@v2
@@ -79,7 +79,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./
-          key: repo-cache-${{ github.sha }}
+          key: repo-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Run action in root with ${{ matrix.releaseStreams }}
         uses: ./action/
@@ -125,7 +125,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./
-          key: repo-cache-${{ github.sha }}
+          key: repo-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Run action
         uses: ./action/
