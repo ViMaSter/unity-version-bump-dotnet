@@ -43,7 +43,7 @@ public class UnityVersion : IComparable
         Major = 1,
         Minor = 2,
         Patch = 3,
-        Channel = 4,
+        ReleaseStream = 4,
         Build = 5
     }
 
@@ -56,7 +56,7 @@ public class UnityVersion : IComparable
         LTS
     }
 
-    private readonly Regex _versionNameMatcher = new("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<channel>\\w)?(?<build>\\d+)?");
+    private readonly Regex _versionNameMatcher = new($"^(?<{VersionPart.Major.ToString().ToLowerInvariant()}>\\d+)\\.(?<{VersionPart.Minor.ToString().ToLowerInvariant()}>\\d+)\\.(?<{VersionPart.Patch.ToString().ToLowerInvariant()}>\\d+)(?<{VersionPart.ReleaseStream.ToString().ToLowerInvariant()}>\\w)?(?<{VersionPart.Build.ToString().ToLowerInvariant()}>\\d+)?");
     private readonly Regex _revisionValidator = new("^[a-f0-9]{12}$");
 
     private readonly Dictionary<VersionPart, int> _versionPartMaximumLength = new()
@@ -64,7 +64,7 @@ public class UnityVersion : IComparable
         { VersionPart.Major, 4 },
         { VersionPart.Minor, 2 },
         { VersionPart.Patch, 2 },
-        { VersionPart.Channel, 1 },
+        { VersionPart.ReleaseStream, 1 },
         { VersionPart.Build, 3 }
     };
 
@@ -72,7 +72,7 @@ public class UnityVersion : IComparable
 
     public string Revision { get; }
     public bool IsLTS { get; }
-    public ReleaseStreamType ReleaseStream => (ReleaseStreamType)_currentValues[VersionPart.Channel];
+    public ReleaseStreamType ReleaseStream => (ReleaseStreamType)_currentValues[VersionPart.ReleaseStream];
 
     public UnityVersion(string fullVersion, string revision, bool isLTS)
     {
@@ -93,11 +93,11 @@ public class UnityVersion : IComparable
         foreach (var (partName, maximumLength) in _versionPartMaximumLength)
         {
             var partNameString = partName.ToString().ToLowerInvariant();
-            if (partName == VersionPart.Channel)
+            if (partName == VersionPart.ReleaseStream)
             {
                 if (!matchAttempt.Groups[partNameString].Success)
                 {
-                    _currentValues[VersionPart.Channel] = (int)ReleaseStreamType.Stable;
+                    _currentValues[VersionPart.ReleaseStream] = (int)ReleaseStreamType.Stable;
                     _currentValues[VersionPart.Build] = 0;
                     break;
                 }
@@ -109,7 +109,7 @@ public class UnityVersion : IComparable
                 throw new MismatchingLengthException(fullVersion, partName.ToString(), maximumLength, parsedValue.Length);
             }
 
-            if (partName == VersionPart.Channel)
+            if (partName == VersionPart.ReleaseStream)
             {
                 var shorthand = matchAttempt.Groups[partNameString].Value[0];
                 _currentValues[partName] = shorthand switch
@@ -129,7 +129,7 @@ public class UnityVersion : IComparable
 
     public int GetVersionPart(VersionPart versionPart)
     {
-        if (versionPart == VersionPart.Channel)
+        if (versionPart == VersionPart.ReleaseStream)
         {
             throw new ArgumentException($"Use '{nameof(UnityVersion)}.{nameof(ReleaseStream)}()' to get type-safe information about the release stream of this release");
         }
@@ -138,7 +138,7 @@ public class UnityVersion : IComparable
 
     public long GetComparable()
     {
-        return long.Parse($"{_currentValues[VersionPart.Major]:D4}{_currentValues[VersionPart.Minor]:D2}{_currentValues[VersionPart.Patch]:D2}{_currentValues[VersionPart.Channel]}{_currentValues[VersionPart.Build]:D3}");
+        return long.Parse($"{_currentValues[VersionPart.Major]:D4}{_currentValues[VersionPart.Minor]:D2}{_currentValues[VersionPart.Patch]:D2}{_currentValues[VersionPart.ReleaseStream]}{_currentValues[VersionPart.Build]:D3}");
     }
 
     #region ToString()

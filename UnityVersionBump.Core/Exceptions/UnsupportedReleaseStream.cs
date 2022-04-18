@@ -3,7 +3,7 @@
 public class UnsupportedReleaseStream : Exception
 {
     public UnsupportedReleaseStream(char releaseStreamShorthand)
-        : base($"Unsupported channel shorthand '{releaseStreamShorthand}'")
+        : base($"Unsupported release stream shorthand '{releaseStreamShorthand}'")
     {
     }
 }

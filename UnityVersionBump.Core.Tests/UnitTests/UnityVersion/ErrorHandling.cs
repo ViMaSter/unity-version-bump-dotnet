@@ -45,7 +45,7 @@ public class ErrorHandling
         StringAssert.Contains(invalidFormat, exception!.Message);
     }
 
-    private static object[] _unsupportedChannel = {
+    private static object[] _unsupportedReleaseStream = {
         new object[]{'c' },
         new object[]{'d' },
         new object[]{'e' },
@@ -70,13 +70,13 @@ public class ErrorHandling
         new object[]{'z' },
         new object[]{'_' },
     };
-    [TestCaseSource(nameof(_unsupportedChannel))]
-    public void ThrowsIfUnsupportedChannel(char shorthand)
+    [TestCaseSource(nameof(_unsupportedReleaseStream))]
+    public void ThrowsIfUnsupportedReleaseStream(char releaseStreamShorthand)
     {
         var exception = Assert.Throws<UnsupportedReleaseStream>(() => {
-            _ = new Core.UnityVersion($"2021.1.0{shorthand}12", "1234567890ab", false);
+            _ = new Core.UnityVersion($"2021.1.0{releaseStreamShorthand}12", "1234567890ab", false);
         });
         Assert.NotNull(exception);
-        StringAssert.Contains($"'{shorthand}'", exception!.Message);
+        StringAssert.Contains($"'{releaseStreamShorthand}'", exception!.Message);
     }
 }
