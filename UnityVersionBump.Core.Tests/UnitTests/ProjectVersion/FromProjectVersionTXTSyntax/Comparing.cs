@@ -24,6 +24,24 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.FromProjectVersio
             }
         }
 
+        [TestCaseSource(nameof(OrderedReleases))]
+        public void MatchingVersionsAreEqual(Core.UnityVersion unityVersion)
+        {
+            // ReSharper disable once EqualExpressionComparison (needed to hit coverage)
+            Assert.IsTrue(unityVersion.Equals(unityVersion));
+            Assert.AreEqual(unityVersion, new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false));
+
+            Assert.AreEqual(unityVersion.GetHashCode(), unityVersion.GetHashCode());
+            Assert.AreEqual(unityVersion.GetHashCode(), new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false).GetHashCode());
+        }
+
+        [TestCaseSource(nameof(OrderedReleases))]
+        public void CanCompareAgainstNull(Core.UnityVersion unityVersion)
+        {
+            Assert.AreEqual(1, unityVersion.CompareTo(null));
+            Assert.AreEqual(1, unityVersion.CompareTo("not same type"));
+        }
+
         [TestCase]
         public void CanSortReleases()
         {
