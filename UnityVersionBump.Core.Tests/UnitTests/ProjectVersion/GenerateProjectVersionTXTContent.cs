@@ -8,7 +8,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         [TestCase]
         public void InputEqualsOutput()
         {
-            var projectVersionTxt = new StreamReader(GetType().Assembly.GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.Resources.ProjectVersion.txt")!).ReadToEnd();
+            var projectVersionTxt = new StreamReader(GetType().Assembly.GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.Resources.ProjectVersion.txt")!).ReadToEnd().ReplaceLineEndings("\n");
             var unityVersion = Core.ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
             Assert.AreEqual(projectVersionTxt, Core.ProjectVersion.GenerateProjectVersionTXTContent(unityVersion));
         }
