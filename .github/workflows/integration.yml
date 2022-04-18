@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ./
           key: repo-cache-${{ github.sha }}
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ./
           key: repo-cache-${{ github.sha }}
@@ -122,7 +122,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ./
           key: repo-cache-${{ github.sha }}
