@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
 {
@@ -17,6 +18,8 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(2, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
+
 
             Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Patch, nonLTSVersion.ReleaseStream);
             Assert.IsFalse(nonLTSVersion.IsLTS);
@@ -24,6 +27,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(2, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
         }
 
         [TestCase]
@@ -38,6 +42,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(2, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
 
             Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Stable, nonLTSVersion.ReleaseStream);
             Assert.IsFalse(nonLTSVersion.IsLTS);
@@ -45,6 +50,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(2, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
         }
 
         [TestCase]
@@ -59,6 +65,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(2, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
 
             Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Stable, nonLTSVersion.ReleaseStream);
             Assert.IsFalse(nonLTSVersion.IsLTS);
@@ -66,6 +73,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(2, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
         }
 
         [TestCase]
@@ -80,6 +88,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(15, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
 
             Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Beta, nonLTSVersion.ReleaseStream);
             Assert.IsFalse(nonLTSVersion.IsLTS);
@@ -87,6 +96,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(15, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
         }
 
         [TestCase]
@@ -101,6 +111,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(15, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
 
             Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Alpha, nonLTSVersion.ReleaseStream);
             Assert.IsFalse(nonLTSVersion.IsLTS);
@@ -108,6 +119,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
             Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
             Assert.AreEqual(15, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
         }
     }
 }
