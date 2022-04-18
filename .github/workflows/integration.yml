@@ -20,7 +20,7 @@ jobs:
       - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
-          path: ./
+          path: ./*
           key: repo-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Checkout test fixture
@@ -78,7 +78,7 @@ jobs:
       - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
-          path: ./
+          path: ./*
           key: repo-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Run action in root with ${{ matrix.releaseStreams }}
@@ -124,7 +124,7 @@ jobs:
       - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
-          path: ./
+          path: ./*
           key: repo-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Run action
