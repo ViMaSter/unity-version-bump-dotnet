@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UnityVersionBump.Core.Exceptions;
 
 namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
@@ -12,7 +11,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
             new[] {"https://download.unity3d.com/download_unity/602ecdbb2fb0/Windows64EditorInstaller/UnitySetup64-2021.2.19f1.exe", "602ecdbb2fb0"},
             new[] {"https://download.unity3d.com/download_unity/6eacc8284459/Windows64EditorInstaller/UnitySetup64-2021.3.0f1.exe", "6eacc8284459"},
             new[] {"https://beta.unity3d.com/download/098023fe5c31/Windows64EditorInstaller/UnitySetup64-2022.1.0b16.exe", "098023fe5c31"},
-            new[] {"https://beta.unity3d.com/download/2849b868ceb7/Windows64EditorInstaller/UnitySetup64-2022.2.0a10.exe", "2849b868ceb7"},
+            new[] {"https://beta.unity3d.com/download/2849b868ceb7/Windows64EditorInstaller/UnitySetup64-2022.2.0a10.exe", "2849b868ceb7"}
         };
 
         [TestCaseSource(nameof(URLAndExpectedRevision))]
@@ -28,7 +27,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
             "https://go.microsoft.com/fwlink/?linkid=2087047",
             "https://cloudmedia-docs.unity3d.com/docscloudstorage/2019.4/UnityDocumentation.zip",
             "https://beta.unity3d.com/download/2849b868ceb/Windows64EditorInstaller/UnitySetup64-2022.2.0a10.exe",
-            "https://beta.unity3d.com/download/2849b868ceba4/Windows64EditorInstaller/UnitySetup64-2022.2.0a10.exe",
+            "https://beta.unity3d.com/download/2849b868ceba4/Windows64EditorInstaller/UnitySetup64-2022.2.0a10.exe"
         };
         [TestCaseSource(nameof(InvalidUrls))]
         public void ThrowsIfURLHasNoHash(string downloadURL)

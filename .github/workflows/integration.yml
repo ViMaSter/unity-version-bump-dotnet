@@ -40,37 +40,10 @@ jobs:
     strategy:
       matrix:
         releaseStreams: [
-          'Alpha',
-          'Beta',
-          'Patch',
-          'Stable',
-          'LTS',
-          'Alpha,Beta',
-          'Alpha,Stable',
-          'Alpha,Patch',
-          'Alpha,LTS',
-          'Beta,Patch',
-          'Beta,Stable',
-          'Beta,LTS',
-          'Stable,Patch',
-          'Stable,LTS',
-          'Patch,LTS',
-          'Alpha,Beta,Stable',
-          'Alpha,Beta,Patch',
-          'Alpha,Beta,LTS',
-          'Alpha,Stable,Patch',
-          'Alpha,Stable,LTS',
-          'Alpha,Patch,LTS',
-          'Beta,Stable,Patch',
-          'Beta,Stable,LTS',
-          'Beta,Patch,LTS',
-          'Stable,Patch,LTS',
-          'Alpha,Beta,Stable,Patch',
-          'Alpha,Beta,Stable,LTS',
-          'Alpha,Beta,Patch,LTS',
-          'Alpha,Stable,Patch,LTS',
-          'Beta,Stable,Patch,LTS',
-          'Alpha,Beta,Stable,Patch,LTS'
+          { stream: 'Stable',       prefix: 'Stable' },
+          { stream: 'LTS',          prefix: 'LTS' },
+          { stream: 'Alpha,Stable', prefix: 'Alpha-Stable' },
+          { stream: 'Beta,Stable',  prefix: 'Beta-Stable' }
         ]
     runs-on: ubuntu-latest
     steps:
@@ -80,16 +53,20 @@ jobs:
           path: ./*
           key: repo-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
 
-      - name: Run action in root with ${{ matrix.releaseStreams }}
+      - name: Run action in root with ${{ matrix.releaseStreams.stream }}
         uses: ./action/
         with:
-          releaseStreams: ${{ matrix.releaseStreams }}
+          releaseStreams: ${{ matrix.releaseStreams.stream }}
+          pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-${{ matrix.releaseStreams.prefix }}-root
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run action in subfolder with ${{ matrix.releaseStreams }}
+      - name: Run action in subfolder with ${{ matrix.releaseStreams.stream }}
         uses: ./action/
         with:
-          projectPath: subfolder
-          releaseStreams: ${{ matrix.releaseStreams }}
+          unityProjectPath: subfolder
+          releaseStreams: ${{ matrix.releaseStreams.stream }}
+          pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-${{ matrix.releaseStreams.prefix }}-sub
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
   failsIfFolderDoesNotExist:
     name: Fails if implicit root folder does not exist
@@ -107,6 +84,8 @@ jobs:
         continue-on-error: true
         with:
           releaseStreams: Stable,LTS
+          pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-fail-root
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Mark pipeline as failed, if previous step has succeeded
         if: ${{steps.updateCheck.outputs.has-never-version}}
@@ -131,8 +110,10 @@ jobs:
         id: updateCheck
         continue-on-error: true
         with:
-          projectPath: non-existent
+          unityProjectPath: non-existent
+          pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-fail-sub
           releaseStreams: Stable,LTS
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Mark pipeline as failed, if previous step has succeeded
         if: ${{steps.updateCheck.outputs.has-never-version}}
