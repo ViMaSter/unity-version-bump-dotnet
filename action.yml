@@ -4,22 +4,30 @@ branding:
   icon: activity
   color: orange
 inputs:
-  releaseStreams:
-    description:
-      "(Comma-separated list of) release streams to consider when determining the latest version. (Possible values: 'Stable', 'LTS', 'Beta', 'Alpha') [example: 'Stable', 'LTS,Stable', 'Stable,Beta,Alpha']"
+  githubToken:
+    description: "Set this to '${{ secrets.GITHUB_TOKEN }}' or a personal access token (PAT) that is allowed to read code and create pull requests for this repository"
     required: true
-  projectPath:
-    description:
-      "Path to the Unity project root, if it's not the root of the repository this action runs on [example: 'unity-project', 'projects/game1']"
+  releaseStreams:
+    description: "(Comma-separated list of) release streams to consider when determining the latest version. (Possible values: 'Stable', 'LTS', 'Beta', 'Alpha') [example: 'Stable', 'LTS,Stable', 'Stable,Beta,Alpha']"
+    required: true
+  unityProjectPath:
+    description: "Path to the Unity project root, if it's not the root of the repository this action runs on [example: 'unity-project', 'projects/game1']"
     required: false
-    default: '/github/workspace'
+    default: ''
+  pullRequestPrefix:
+    description: "Prefix used by pull requests created by this action (defaults to 'unity')"
+    required: false
+    default: 'unity'
+  pullRequestLabels:
+    description: "(Comma-separated list of) labels to add to pull requests created by this action. (Ensure that all labels used exist for this repository.)"
+    required: false
 outputs:
   has-never-version:
     description:
       'A boolean value, indicating whether or not the current version is outdated.'	
   current-unity-version:
     description:
-      'The version of Unity of the project inside projectPath.'
+      'The version of Unity of the project inside unityProjectPath.'
   newest-unity-version:
     description:
       'The newest available version of the specified release streams (might be identical to current-unity-version or "None" if no version is available for the specified release streams).'
@@ -29,5 +37,11 @@ runs:
   args:
   - '-r'
   - ${{ inputs.releaseStreams }}
+  - '-u'
+  - ${{ inputs.unityProjectPath }}
   - '-p'
-  - ${{ inputs.projectPath }}
+  - ${{ inputs.pullRequestPrefix }}
+  - '-g'
+  - ${{ inputs.githubToken }}
+  - '-l'
+  - ${{ inputs.pullRequestLabels }}

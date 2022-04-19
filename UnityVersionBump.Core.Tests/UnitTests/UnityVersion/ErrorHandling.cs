@@ -33,7 +33,7 @@ public class ErrorHandling
         new object[]{"202111a1" },
         new object[]{"a" },
         new object[]{"1" },
-        new object[]{"" },
+        new object[]{"" }
     };
     [TestCaseSource(nameof(_invalidSyntax))]
     public void ThrowsIfInvalidVersionFormat(string invalidFormat)
@@ -68,7 +68,7 @@ public class ErrorHandling
         new object[]{'x' },
         new object[]{'y' },
         new object[]{'z' },
-        new object[]{'_' },
+        new object[]{'_' }
     };
     [TestCaseSource(nameof(_unsupportedReleaseStream))]
     public void ThrowsIfUnsupportedReleaseStream(char releaseStreamShorthand)
