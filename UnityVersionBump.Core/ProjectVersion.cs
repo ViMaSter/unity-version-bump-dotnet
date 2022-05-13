@@ -44,7 +44,7 @@ namespace UnityVersionBump.Core
             return $"m_EditorVersion: {unityVersion.ToUnityString()}\nm_EditorVersionWithRevision: {unityVersion.ToUnityStringWithRevision()}\n";
         }
 
-        public static UnityVersion GetLatestFromHub(HttpClient httpClient, IEnumerable<UnityVersion.ReleaseStreamType> consideredReleaseStreams)
+        public static UnityVersion? GetLatestFromHub(HttpClient httpClient, IEnumerable<UnityVersion.ReleaseStreamType> consideredReleaseStreams)
         {
             var qualifiedReleaseStreams = consideredReleaseStreams.ToList();
             if (!qualifiedReleaseStreams.Any())
@@ -74,7 +74,8 @@ namespace UnityVersionBump.Core
             var qualifyingReleases = releasesForStreams.Concat(releasesForLTS).ToList();
             if (!qualifyingReleases.Any())
             {
-                throw new FileNotFoundException($"No release found for the following release streams: '{string.Join("','", qualifiedReleaseStreams)}'. Available releases:{string.Join("", allAvailableReleases.Select(release=>$"\r\n  - {release}"))})");
+                Console.WriteLine($"No release found matching any of the following release streams: '{string.Join("','", qualifiedReleaseStreams)}'.\r\nAvailable releases:{string.Join("", allAvailableReleases.Select(release=>$"\r\n  - {release}"))})");
+                return null;
             }
 
             return qualifyingReleases.OrderByDescending(release=>release).First();

@@ -40,17 +40,16 @@ jobs:
     strategy:
       matrix:
         releaseStreams: [
-          # Excluded, as it is not guaranteed these builds are available
-          # 'Alpha',
-          # 'Beta',
-          # 'Patch',
-          # 'Beta,Patch',
+          'Alpha',
+          'Beta',
+          'Patch',
           'Stable',
           'LTS',
           'Alpha,Beta',
           'Alpha,Stable',
           'Alpha,Patch',
           'Alpha,LTS',
+          'Beta,Patch',
           'Beta,Stable',
           'Beta,LTS',
           'Stable,Patch',

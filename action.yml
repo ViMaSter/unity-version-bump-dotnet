@@ -22,7 +22,7 @@ outputs:
       'The version of Unity of the project inside projectPath.'
   newest-unity-version:
     description:
-      'The newest available version of the specified release streams (might be identical to current-unity-version).'
+      'The newest available version of the specified release streams (might be identical to current-unity-version or "None" if no version is available for the specified release streams).'
 runs:
   using: 'docker'
   image: 'Dockerfile'
