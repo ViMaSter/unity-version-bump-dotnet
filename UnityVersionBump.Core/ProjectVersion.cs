@@ -74,7 +74,7 @@ namespace UnityVersionBump.Core
             var qualifyingReleases = releasesForStreams.Concat(releasesForLTS).ToList();
             if (!qualifyingReleases.Any())
             {
-                throw new FileNotFoundException($"No release found for the following release streams: '{(releasesForLTS.Any() ? string.Join("','", releasesForLTS) : "NONE")}'");
+                throw new FileNotFoundException($"No release found for the following release streams: '{string.Join("','", qualifiedReleaseStreams)}'. Available releases:{string.Join("", allAvailableReleases.Select(release=>$"\r\n  - {release}"))})");
             }
 
             return qualifyingReleases.OrderByDescending(release=>release).First();
