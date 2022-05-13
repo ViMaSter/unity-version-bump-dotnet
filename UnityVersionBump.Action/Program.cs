@@ -35,6 +35,19 @@ static async Task StartAnalysisAsync(ActionInputs inputs)
     var currentVersion = UnityVersionBump.Core.ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
     var highestVersion = UnityVersionBump.Core.ProjectVersion.GetLatestFromHub(new(), inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>));
 
+    if (highestVersion == null)
+    {
+        Console.WriteLine($"echo Current Unity Version: {currentVersion.ToUnityStringWithRevision()}");
+        Console.WriteLine($"echo Latest Unity Version:  None");
+        Console.WriteLine($"::set-output name=has-never-version::False");
+        Console.WriteLine($"::set-output name=current-unity-version::{currentVersion.ToUnityStringWithRevision()}");
+        Console.WriteLine($"::set-output name=newest-unity-version::None");
+
+        await Task.CompletedTask;
+
+        Environment.Exit(0);
+    }
+    
     Console.WriteLine($"echo Current Unity Version: {currentVersion.ToUnityStringWithRevision()}");
     Console.WriteLine($"echo Latest Unity Version:  {highestVersion.ToUnityStringWithRevision()}");
     Console.WriteLine($"::set-output name=has-never-version::{highestVersion.GetComparable()>currentVersion.GetComparable()}");
