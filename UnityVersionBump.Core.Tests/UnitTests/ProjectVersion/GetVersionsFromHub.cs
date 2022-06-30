@@ -61,7 +61,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         {
             HttpClient clientWithoutPatchVersions = new(new LocalFileMessageHandler("UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.Resources.NoPatchVersions.json"));
 
-            Assert.IsNull(Core.ProjectVersion.GetLatestFromHub(clientWithoutPatchVersions, new List<Core.UnityVersion.ReleaseStreamType> { Core.UnityVersion.ReleaseStreamType.Patch }));
+            Assert.Throws<FileNotFoundException>(() => Core.ProjectVersion.GetLatestFromHub(clientWithoutPatchVersions, new List<Core.UnityVersion.ReleaseStreamType> { Core.UnityVersion.ReleaseStreamType.Patch }));
         }
     }
 }
