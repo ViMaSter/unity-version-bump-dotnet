@@ -5,7 +5,7 @@ branding:
   color: orange
 inputs:
   githubToken:
-    description: "Set this to '${{ secrets.GITHUB_TOKEN }}' or a personal access token (PAT) that is allowed to read code and create pull requests for this repository"
+    description: Set this to '"'$"{{" secrets.GITHUB_TOKEN "}}"'"' or a personal access token (PAT) that is allowed to read code and create pull requests for this repository
     required: true
   releaseStreams:
     description: "(Comma-separated list of) release streams to consider when determining the latest version. (Possible values: 'Stable', 'LTS', 'Beta', 'Alpha') [example: 'Stable', 'LTS,Stable', 'Stable,Beta,Alpha']"
