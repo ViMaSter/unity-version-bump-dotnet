@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using UnityVersionBump.Core.Exceptions;
 using UnityVersionBump.Core.SerializedResponses;
@@ -74,7 +74,12 @@ namespace UnityVersionBump.Core
             var qualifyingReleases = releasesForStreams.Concat(releasesForLTS).ToList();
             if (!qualifyingReleases.Any())
             {
-                throw new FileNotFoundException($"No release found for the following release streams: '{(qualifiedReleaseStreams.Any() ? string.Join("','", qualifiedReleaseStreams) : "NONE")}'");
+                var availableReleases = "NONE";
+                if (qualifiedReleaseStreams.Any())
+                {
+                    availableReleases = $"'{string.Join("','", qualifiedReleaseStreams)}'.\r\nAvailable releases: {string.Join("", allAvailableReleases.Select(release => $"\r\n  - {release}"))})";
+                }
+                throw new FileNotFoundException("No release found for the following release streams: " + availableReleases);
             }
 
             return qualifyingReleases.OrderByDescending(release=>release).First();
