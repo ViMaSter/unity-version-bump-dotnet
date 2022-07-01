@@ -20,7 +20,7 @@ namespace UnityVersionBump.Action
         {
             get;
             set;
-        } = "";
+        } = "/github/workspace";
 
         [Option('p', "pullRequestPrefix",
             Required = false,
