@@ -10,7 +10,6 @@ using static CommandLine.Parser;
 
 var githubInfo = new
 {
-    userServer = Environment.GetEnvironmentVariable("GITHUB_SERVER_URL")!,
     apiServer = Environment.GetEnvironmentVariable("GITHUB_API_URL")!
 };
 
