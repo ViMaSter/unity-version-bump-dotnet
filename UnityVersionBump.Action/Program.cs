@@ -48,7 +48,15 @@ await host.RunAsync();
 
 static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory clientFactory)
 {
-    var repositoryInfo = Environment.GetEnvironmentVariable("GITHUB_REPOSITORY_OWNER")!.Split("/");
+    if (!inputs.TargetRepository.Contains('/'))
+    {
+        GitHubActionsUtilities.GitHubActionsWriteLine("TargetRepository isn't set to a proper 'owner/repoName' value");
+        Environment.Exit(1);
+    }
+
+    var repositoryInfo = inputs.TargetRepository.Split("/");
+    GitHubActionsUtilities.GitHubActionsWriteLine($"Owner:  {string.Join(",", repositoryInfo)}");
+
     var projectInfo = new PullRequestManager.RepositoryInfo {
         RelativePathToUnityProject = inputs.UnityProjectPath,
         UserName = repositoryInfo[0],

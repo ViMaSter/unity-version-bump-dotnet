@@ -26,7 +26,7 @@ jobs:
       - name: Checkout test fixture
         uses: actions/checkout@v2
         with:
-          repository: ViMaSter/unity-version-bump-test-fixture
+          repository: "vimaster/unity-version-bump-test-fixture"
 
       - name: Checkout action
         uses: actions/checkout@v2
@@ -60,8 +60,7 @@ jobs:
           pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-${{ matrix.releaseStreams.prefix }}-root
           githubToken: ${{ secrets.REPOSITORY_SECRET }}
           pullRequestLabels: autoupdate
-        env:
-          GITHUB_REPOSITORY_OWNER: vimaster/unity-version-bump-test-fixture
+          targetRepository: vimaster/unity-version-bump-test-fixture
 
       - name: Run action in subfolder with ${{ matrix.releaseStreams.stream }}
         uses: ./action/
@@ -71,8 +70,7 @@ jobs:
           pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-${{ matrix.releaseStreams.prefix }}-sub
           githubToken: ${{ secrets.REPOSITORY_SECRET }}
           pullRequestLabels: autoupdate
-        env:
-          GITHUB_REPOSITORY_OWNER: vimaster/unity-version-bump-test-fixture
+          targetRepository: vimaster/unity-version-bump-test-fixture
 
   failsIfFolderDoesNotExist:
     name: Fails if implicit root folder does not exist
@@ -93,8 +91,7 @@ jobs:
           pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-fail-root
           githubToken: ${{ secrets.REPOSITORY_SECRET }}
           pullRequestLabels: autoupdate
-        env:
-          GITHUB_REPOSITORY_OWNER: vimaster/unity-version-bump-test-fixture
+          targetRepository: vimaster/unity-version-bump-test-fixture
 
       - name: Mark pipeline as failed, if previous step has succeeded
         if: ${{steps.updateCheck.outputs.has-never-version}}
@@ -124,8 +121,7 @@ jobs:
           releaseStreams: Stable,LTS
           githubToken: ${{ secrets.REPOSITORY_SECRET }}
           pullRequestLabels: autoupdate
-        env:
-          GITHUB_REPOSITORY_OWNER: vimaster/unity-version-bump-test-fixture
+          targetRepository: vimaster/unity-version-bump-test-fixture
 
       - name: Mark pipeline as failed, if previous step has succeeded
         if: ${{steps.updateCheck.outputs.has-never-version}}
