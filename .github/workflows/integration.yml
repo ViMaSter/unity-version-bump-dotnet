@@ -59,6 +59,7 @@ jobs:
           releaseStreams: ${{ matrix.releaseStreams.stream }}
           pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-${{ matrix.releaseStreams.prefix }}-root
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          pullRequestLabels: autoupdate
 
       - name: Run action in subfolder with ${{ matrix.releaseStreams.stream }}
         uses: ./action/
@@ -67,6 +68,7 @@ jobs:
           releaseStreams: ${{ matrix.releaseStreams.stream }}
           pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-${{ matrix.releaseStreams.prefix }}-sub
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          pullRequestLabels: autoupdate
 
   failsIfFolderDoesNotExist:
     name: Fails if implicit root folder does not exist
@@ -86,6 +88,7 @@ jobs:
           releaseStreams: Stable,LTS
           pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-fail-root
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          pullRequestLabels: autoupdate
 
       - name: Mark pipeline as failed, if previous step has succeeded
         if: ${{steps.updateCheck.outputs.has-never-version}}
@@ -114,6 +117,7 @@ jobs:
           pullRequestPrefix: ${{ github.run_number }}-${{ github.run_attempt }}-fail-sub
           releaseStreams: Stable,LTS
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          pullRequestLabels: autoupdate
 
       - name: Mark pipeline as failed, if previous step has succeeded
         if: ${{steps.updateCheck.outputs.has-never-version}}
