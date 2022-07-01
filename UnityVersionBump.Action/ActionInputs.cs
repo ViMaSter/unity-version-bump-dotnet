@@ -6,7 +6,7 @@ namespace UnityVersionBump.Action
     {
         [Option('g', "githubToken",
             Required = true,
-            HelpText = "Set this to '${{ secrets.GITHUB_TOKEN }}' or a personal access token (PAT) that is allowed to read code and create pull requests for this repository")]
+            HelpText = "When using --targetRepository, set this to a personal access token (PAT) is allowed to read code and create pull requests for the target repository")]
         public string GithubToken
         {
             get;
@@ -21,6 +21,15 @@ namespace UnityVersionBump.Action
             get;
             set;
         } = "/github/workspace";
+
+        [Option('t', "targetRepository",
+            Required = false,
+            HelpText = "When attempting to target another repository, set this to '$OWNER/$NAME' (defaults to repository this action is run in)")]
+        public string TargetRepository
+        {
+            get;
+            set;
+        } = "";
 
         [Option('p', "pullRequestPrefix",
             Required = false,

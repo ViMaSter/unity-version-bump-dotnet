@@ -5,7 +5,7 @@ branding:
   color: orange
 inputs:
   githubToken:
-    description: Set this to '"'$"{{" secrets.GITHUB_TOKEN "}}"'"' or a personal access token (PAT) that is allowed to read code and create pull requests for this repository
+    description: When using --targetRepository, set this to a personal access token (PAT) is allowed to read code and create pull requests for the target repository
     required: true
   releaseStreams:
     description: "(Comma-separated list of) release streams to consider when determining the latest version. (Possible values: 'Stable', 'LTS', 'Beta', 'Alpha') [example: 'Stable', 'LTS,Stable', 'Stable,Beta,Alpha']"
@@ -14,6 +14,10 @@ inputs:
     description: "Path to the Unity project root, if it's not the root of the repository this action runs on [example: 'unity-project', 'projects/game1']"
     required: false
     default: ''
+  targetRepository:
+    description: "When attempting to target another repository, set this to '$OWNER/$NAME' (defaults to repository this action is run in)"
+    required: false
+    default: ${{ github.repository }}
   pullRequestPrefix:
     description: "Prefix used by pull requests created by this action (defaults to 'unity')"
     required: false
@@ -39,6 +43,8 @@ runs:
   - ${{ inputs.releaseStreams }}
   - '-u'
   - ${{ inputs.unityProjectPath }}
+  - '-t'
+  - ${{ inputs.targetRepository }}
   - '-p'
   - ${{ inputs.pullRequestPrefix }}
   - '-g'
