@@ -123,6 +123,11 @@ namespace UnityVersionBump.Core
 
             public static async Task ApplyLabels(HttpClient httpClient, long pullRequest, string[] commitInfoPullRequestLabels)
             {
+                if (commitInfoPullRequestLabels.Length == 0)
+                {
+                    return;
+                }
+
                 var response = await httpClient.PostAsync($"issues/{pullRequest}/labels", JsonContent.Create(new
                 {
                     labels = commitInfoPullRequestLabels

@@ -119,4 +119,26 @@ class CreatePullRequestIfTargetVersionNewer
             );
         });
     }
+
+
+    [TestCase]
+    public async Task SucceedsIfNoLabel()
+    {
+        var failingClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.FailedLabel")).SetupGitHub(repositoryInfo, commitUserInfo);
+
+        Assert.IsNotEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+            failingClient,
+            new Core.PullRequestManager.CommitInfo
+            {
+                APIToken = "ghp_api",
+                FullName = "UnityVersionBump (bot)",
+                EmailAddress = "unity-version-bump@vincent.mahn.ke",
+                PullRequestLabels = Array.Empty<string>(),
+                PullRequestPrefix = "prefix"
+            },
+            repositoryInfo,
+            new Core.UnityVersion("2022.2.0p1", "1234567890ab", true),
+            new Core.UnityVersion("2022.2.1f2", "234567890abc", true)
+        ));
+    }
 }
