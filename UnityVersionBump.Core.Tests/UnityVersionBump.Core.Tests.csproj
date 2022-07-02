@@ -8,15 +8,63 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="UnitTests\ProjectVersion\Resources\ExpectedHTTPResponse.json" />
-    <None Remove="UnitTests\ProjectVersion\Resources\NoPatchVersions.json" />
-    <None Remove="UnitTests\ProjectVersion\Resources\ProjectVersion.txt" />
+    <None Remove="UnitTests\ProjectVersion\Resources\ExpectedHTTPResponse - Copy (2)\GET\hub\prod\releases-win32.json" />
+    <None Remove="UnitTests\ProjectVersion\Resources\NoPatchVersions\GET\hub\prod\releases_win32.json" />
+    <None Remove="UnitTests\ProjectVersion\Resources\releases-win32.json" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success - Copy (2)\GET\repos\ViMaSter\unity-version-bump-test-fixture\branches\main" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success - Copy (2)\GET\repos\ViMaSter\unity_version_bump_test_fixture" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success - Copy (2)\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\blobs" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success - Copy (2)\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\commits" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success - Copy (2)\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\refs" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success - Copy (2)\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\trees" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success - Copy (2)\POST\repos\ViMaSter\unity-version-bump-test-fixture\issues\25\labels" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success - Copy (2)\POST\repos\ViMaSter\unity-version-bump-test-fixture\pulls" />
+    <None Remove="UnitTests\PullRequestManager\Resources\FailedBranch\GET\repos\ViMaSter\unity-version-bump-test-fixture\branches\main" />
+    <None Remove="UnitTests\PullRequestManager\Resources\FailedBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture" />
+    <None Remove="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\blobs" />
+    <None Remove="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\commits" />
+    <None Remove="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\refs" />
+    <None Remove="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\trees" />
+    <None Remove="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\issues\25\labels" />
+    <None Remove="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\pulls" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success\GET\repos\ViMaSter\unity-version-bump-test-fixture\branches\main" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success\GET\repos\ViMaSter\unity_version_bump_test_fixture" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\blobs" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\commits" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\refs" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\trees" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\issues\25\labels" />
+    <None Remove="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\pulls" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\NoPatchVersions.json" />
-    <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\ExpectedHTTPResponse.json" />
     <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\ProjectVersion.txt" />
+    <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\NoPatchVersions\GET\hub\prod\releases_win32.json" />
+    <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\ExpectedHTTPResponse\GET\hub\prod\releases_win32.json" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\GET\repos\ViMaSter\unity-version-bump-test-fixture\branches\main" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\GET\repos\ViMaSter\unity_version_bump_test_fixture" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\blobs" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\commits" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\refs" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\trees" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity-version-bump-test-fixture\issues\25\labels" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity-version-bump-test-fixture\pulls" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\GET\repos\ViMaSter\unity-version-bump-test-fixture\branches\main" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\blobs" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\commits" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\refs" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\trees" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\issues\25\labels" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity-version-bump-test-fixture\pulls" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\Success\GET\repos\ViMaSter\unity-version-bump-test-fixture\branches\main" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\Success\GET\repos\ViMaSter\unity_version_bump_test_fixture" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\blobs" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\commits" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\refs" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\git\trees" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\issues\25\labels" />
+    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\Success\POST\repos\ViMaSter\unity-version-bump-test-fixture\pulls" />
   </ItemGroup>
 
   <ItemGroup>

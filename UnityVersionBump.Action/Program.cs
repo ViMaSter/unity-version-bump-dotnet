@@ -13,19 +13,25 @@ var githubInfo = new
     apiServer = Environment.GetEnvironmentVariable("GITHUB_API_URL")!
 };
 
+
 using var host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(collection => {
+    .ConfigureServices(collection =>
+    {
         collection
-            .AddHttpClient("github", client => {
+            .AddHttpClient("github", client =>
+            {
                 client.BaseAddress = new(githubInfo.apiServer);
             })
-            .AddPolicyHandler(_ => HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(new List<TimeSpan> {
+            .AddPolicyHandler(_ => HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(new List<TimeSpan>
+            {
                 TimeSpan.FromSeconds(1),
                 TimeSpan.FromSeconds(1),
                 TimeSpan.FromSeconds(3)
-            }));
+            }))
+            .AddHttpMessageHandler(() => new Writer());
     })
     .Build();
+
 
 var parser = Default.ParseArguments<ActionInputs>(() => new(), args);
 parser.WithNotParsed(
@@ -54,15 +60,15 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
         Environment.Exit(1);
     }
 
-    var repositoryInfo = inputs.TargetRepository.Split("/");
-    GitHubActionsUtilities.GitHubActionsWriteLine($"Owner:  {string.Join(",", repositoryInfo)}");
+    var repositoryPath = inputs.TargetRepository.Split("/");
+    GitHubActionsUtilities.GitHubActionsWriteLine($"Owner:  {string.Join(",", repositoryPath)}");
 
-    var projectInfo = new PullRequestManager.RepositoryInfo {
+    var repositoryInfo = new PullRequestManager.RepositoryInfo {
         RelativePathToUnityProject = inputs.UnityProjectPath,
-        UserName = repositoryInfo[0],
-        RepositoryName = repositoryInfo[1]
+        UserName = repositoryPath[0],
+        RepositoryName = repositoryPath[1]
     };
-    var commitUserInfo = new PullRequestManager.CommitInfo {
+    var commitInfo = new PullRequestManager.CommitInfo {
         APIToken = inputs.GithubToken,
         FullName = "UnityVersionBump (bot)",
         EmailAddress = "unity-version-bump@vincent.mahn.ke",
@@ -70,14 +76,15 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
         PullRequestPrefix = inputs.PullRequestPrefix
     };
 
+    var httpClient = clientFactory.CreateClient("github").SetupGitHub(repositoryInfo, commitInfo);
     var projectVersionTxt = File.ReadAllText(Path.Join(Directory.GetCurrentDirectory(), inputs.UnityProjectPath, "ProjectSettings", "ProjectVersion.txt"));
     var currentVersion = ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
     var highestVersion = ProjectVersion.GetLatestFromHub(clientFactory.CreateClient(), inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>));
 
     var newPullRequestID = await PullRequestManager.CreatePullRequestIfTargetVersionNewer(
-        clientFactory.CreateClient("github"),
-        commitUserInfo,
-        projectInfo,
+        httpClient,
+        commitInfo,
+        repositoryInfo,
         currentVersion,
         highestVersion
     );
@@ -86,7 +93,7 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
     GitHubActionsUtilities.GitHubActionsWriteLine($"Latest Unity Version:  {highestVersion.ToUnityStringWithRevision()}");
     if (!string.IsNullOrEmpty(newPullRequestID))
     {
-        GitHubActionsUtilities.GitHubActionsWriteLine($"Creating new pull request at: https://github.com/{projectInfo.UserName}/{projectInfo.RepositoryName}/pull/{newPullRequestID} ---");
+        GitHubActionsUtilities.GitHubActionsWriteLine($"Creating new pull request at: https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{newPullRequestID} ---");
     }
     else
     {

@@ -10,7 +10,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
 {
     internal class GetVersionsFromHub
     {
-        private readonly HttpClient _stubHttpClient = new(new LocalFileMessageHandler("UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.Resources.ExpectedHTTPResponse.json"));
+        private readonly HttpClient _stubHttpClient = new(new LocalFileMessageHandler("UnitTests.ProjectVersion.Resources.ExpectedHTTPResponse"));
 
         [TestCase]
         public void ThrowsWhenSpecifyingNoStream()
@@ -59,7 +59,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         [TestCase]
         public void ReturnsNullIfNoVersionExistsForReleaseStreams()
         {
-            HttpClient clientWithoutPatchVersions = new(new LocalFileMessageHandler("UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.Resources.NoPatchVersions.json"));
+            HttpClient clientWithoutPatchVersions = new(new LocalFileMessageHandler("UnitTests.ProjectVersion.Resources.NoPatchVersions"));
 
             Assert.Throws<FileNotFoundException>(() => Core.ProjectVersion.GetLatestFromHub(clientWithoutPatchVersions, new List<Core.UnityVersion.ReleaseStreamType> { Core.UnityVersion.ReleaseStreamType.Patch }));
         }
