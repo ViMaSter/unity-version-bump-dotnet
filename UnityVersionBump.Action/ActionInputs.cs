@@ -71,7 +71,8 @@ namespace UnityVersionBump.Action
             {
                 if ((string?)value is not { Length: > 0 })
                 {
-                    throw new ArgumentException($"{nameof(PullRequestLabels)} can't be empty", nameof(PullRequestLabels));
+                    pullRequestLabels = Array.Empty<string>();
+                    return;
                 }
 
                 pullRequestLabels = value.Split(",").Select(entry => entry.Trim()).ToArray();
