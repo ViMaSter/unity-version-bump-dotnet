@@ -72,7 +72,7 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
         APIToken = inputs.GithubToken,
         FullName = "UnityVersionBump (bot)",
         EmailAddress = "unity-version-bump@vincent.mahn.ke",
-        PullRequestLabels = inputs.PullRequestLabels,
+        PullRequestLabels = inputs.pullRequestLabels,
         PullRequestPrefix = inputs.PullRequestPrefix
     };
 

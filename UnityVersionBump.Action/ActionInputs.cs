@@ -59,9 +59,24 @@ namespace UnityVersionBump.Action
             }
         }
 
+        public string[] pullRequestLabels = null!;
+
         [Option('l', "pullRequestLabels",
             Required = false,
             HelpText = "(Comma-separated list of) labels to add to pull requests created by this action. (Ensure that all labels exist for this repository.)")]
-        public string[] PullRequestLabels => null!;
+        public string PullRequestLabels
+        {
+            get => string.Join(",", pullRequestLabels);
+            set
+            {
+                if ((string?)value is not { Length: > 0 })
+                {
+                    pullRequestLabels = Array.Empty<string>();
+                    return;
+                }
+
+                pullRequestLabels = value.Split(",").Select(entry => entry.Trim()).ToArray();
+            }
+        }
     }
 }
