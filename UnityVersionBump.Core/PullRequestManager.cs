@@ -1,8 +1,19 @@
 ﻿using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace UnityVersionBump.Core
 {
+    public static class HttpClientGitHubExtensions
+    {
+        public static HttpClient SetupGitHub(this HttpClient client, PullRequestManager.RepositoryInfo repositoryInfo, PullRequestManager.CommitInfo commitInfo)
+        {
+            client.DefaultRequestHeaders.Authorization = new("token", commitInfo.APIToken);
+            client.DefaultRequestHeaders.UserAgent.Add(new("UnityVersionBump", "1.0.0"));
+            client.BaseAddress = new($"https://api.github.com/repos/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/");
+            return client;
+        }
+    }
     public static class PullRequestManager
     {
         public record RepositoryInfo
@@ -23,8 +34,6 @@ namespace UnityVersionBump.Core
 
         private static class GitHubAPI
         {
-            private static StringContent MakeJSONContent(dynamic content) => new(System.Text.Json.JsonSerializer.Serialize(content), Encoding.UTF8, "application/json");
-
             public static async Task<string> GetDefaultBranchName(HttpClient httpClient, RepositoryInfo repositoryInfo)
             {
                 var response = await httpClient.GetAsync($"/repos/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}");
@@ -33,7 +42,7 @@ namespace UnityVersionBump.Core
 
             public static async Task<string> CreateBlobForContent(HttpClient httpClient, string newProjectVersionTXTContent)
             {
-                var response = await httpClient.PostAsync("git/blobs", MakeJSONContent(new
+                var response = await httpClient.PostAsync("git/blobs", JsonContent.Create(new
                 {
                     encoding = "utf-8",
                     content = newProjectVersionTXTContent
@@ -57,7 +66,7 @@ namespace UnityVersionBump.Core
                     }
                 }
                 };
-                var response = await httpClient.PostAsync("git/trees", MakeJSONContent(body));
+                var response = await httpClient.PostAsync("git/trees", JsonContent.Create(body));
 
                 return System.Text.Json.Nodes.JsonNode.Parse(await response.Content.ReadAsStreamAsync())!["sha"]!.ToString();
             }
@@ -70,7 +79,7 @@ namespace UnityVersionBump.Core
 
             public static async Task<string> CreateCommit(HttpClient httpClient, string commitMessage, string shaHasOfTreeForNewFileProjectVersionTXT, string shaHashOfLastCommitOnBaseBranch, CommitInfo commitInfo)
             {
-                var response = await httpClient.PostAsync("git/commits", MakeJSONContent(new
+                var response = await httpClient.PostAsync("git/commits", JsonContent.Create(new
                 {
                     message = commitMessage,
                     parents = new[] { shaHashOfLastCommitOnBaseBranch },
@@ -87,7 +96,7 @@ namespace UnityVersionBump.Core
 
             public static async Task CreateBranch(HttpClient httpClient, object branchName, string shaHashOfCommitOfTree)
             {
-                var response = await httpClient.PostAsync("git/refs", MakeJSONContent(new
+                var response = await httpClient.PostAsync("git/refs", JsonContent.Create(new
                 {
                     @ref = $"refs/heads/{branchName}",
                     sha = shaHashOfCommitOfTree
@@ -101,7 +110,7 @@ namespace UnityVersionBump.Core
 
             public static async Task<long> CreatePullRequest(HttpClient httpClient, string baseBranch, string targetBranchName, string title, string body)
             {
-                var response = await httpClient.PostAsync("pulls", MakeJSONContent(new
+                var response = await httpClient.PostAsync("pulls", JsonContent.Create(new
                 {
                     title,
                     body,
@@ -110,6 +119,19 @@ namespace UnityVersionBump.Core
                 }));
 
                 return System.Text.Json.Nodes.JsonNode.Parse(await response.Content.ReadAsStreamAsync())!["number"]!.GetValue<long>();
+            }
+
+            public static async Task ApplyLabels(HttpClient httpClient, long pullRequest, string[] commitInfoPullRequestLabels)
+            {
+                var response = await httpClient.PostAsync($"issues/{pullRequest}/labels", JsonContent.Create(new
+                {
+                    labels = commitInfoPullRequestLabels
+                }));
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new HttpRequestException($"Expected '{HttpStatusCode.OK}'. Instead received '{response.StatusCode}'.\r\n{await response.Content.ReadAsStringAsync()}", null, response.StatusCode);
+                }
             }
         }
 
@@ -139,9 +161,6 @@ namespace UnityVersionBump.Core
                 return "";
             }
 
-            httpClient.DefaultRequestHeaders.Authorization = new("token", commitInfo.APIToken);
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new("UnityVersionBump", "1.0.0"));
-            httpClient.BaseAddress = new($"{httpClient.BaseAddress}repos/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/");
 
             var baseBranch = await GitHubAPI.GetDefaultBranchName(httpClient, repositoryInfo);
             var shaHashOfLastCommitOnBaseBranch = await GitHubAPI.GetLastCommitSHAHash(httpClient, baseBranch);
@@ -158,7 +177,11 @@ namespace UnityVersionBump.Core
 
             var body = TextFormatting.GenerateBody(currentVersion, targetVersion);
 
-            return (await GitHubAPI.CreatePullRequest(httpClient, baseBranch, targetBranchName, commitMessage, body)).ToString("D1");
+            var pullRequest = await GitHubAPI.CreatePullRequest(httpClient, baseBranch, targetBranchName, commitMessage, body);
+
+            await GitHubAPI.ApplyLabels(httpClient, pullRequest, commitInfo.PullRequestLabels);
+
+            return pullRequest.ToString("D1");
         }
     }
 }
