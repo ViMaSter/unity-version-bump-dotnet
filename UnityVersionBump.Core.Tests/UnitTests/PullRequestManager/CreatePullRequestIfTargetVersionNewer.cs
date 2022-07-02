@@ -102,7 +102,6 @@ class CreatePullRequestIfTargetVersionNewer
         });
     }
 
-
     [TestCase]
     public async Task FailsIfLabelCannotBeAttached()
     {
