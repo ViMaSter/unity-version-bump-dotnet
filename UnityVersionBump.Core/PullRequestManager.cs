@@ -1,6 +1,12 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Xml;
+using UnityVersionBump.Core.GitHubActionsData;
+using UnityVersionBump.Core.GitHubActionsData.Models;
 
 namespace UnityVersionBump.Core
 {
@@ -30,6 +36,60 @@ namespace UnityVersionBump.Core
             public string APIToken { get; set; } = null!;
             public string[] PullRequestLabels { get; set; } = null!;
             public string PullRequestPrefix { get; set; }
+        }
+
+        public static class EditorPRs
+        {
+            const string EDITOR_PACKAGE = "editor";
+            private static readonly Regex contentFilter = new Regex("<!--uvb(.*)-->");
+
+            public static async Task<IList<(int number, UnityVersion version)>> GetActivePRs(HttpClient httpClient)
+            {
+                var pullRequests = new List<PullRequest>();
+                var nextPage = 1;
+                do
+                {
+                    var response = await httpClient.GetAsync($"pulls?per_page=100&page={nextPage}");
+                    var contentAsString = await response.Content.ReadAsStringAsync();
+                    var parsedData = JsonSerializer.Deserialize<IEnumerable<PullRequest>>(contentAsString);
+                    pullRequests.AddRange(parsedData);
+                    if (parsedData.Count() < 100)
+                    {
+                        nextPage = -1;
+                        break;
+                    }
+
+                    ++nextPage;
+                } while (nextPage != -1);
+
+                return pullRequests
+                    .Where(PullRequestHasInfo)
+                    .Select(ParsePullRequestInfo)
+                    .Where(IsEditorPackage)
+                    .Select(ConvertToPRNumberAndUnityVersion)
+                    .ToList();
+            }
+
+            private static (int number, UnityVersion) ConvertToPRNumberAndUnityVersion((PullRequest pullRequest, PullRequestInfo pullRequestContent) package)
+            {
+                return (package.pullRequest.number, ProjectVersion.FromProjectVersionTXTSyntax(package.pullRequestContent.data.version));
+            }
+
+            private static bool IsEditorPackage((PullRequest pullRequest, PullRequestInfo pullRequestContent) package)
+            {
+                return package.pullRequestContent.data.package == EDITOR_PACKAGE;
+            }
+
+            private static (PullRequest pullRequest, PullRequestInfo pullRequestContent) ParsePullRequestInfo(PullRequest pullRequest)
+            {
+                var pullRequestContent = JsonSerializer.Deserialize<PullRequestInfo>(contentFilter.Match(pullRequest.body).Groups[1].Value)!;
+                return (pullRequest, pullRequestContent);
+            }
+
+            private static bool PullRequestHasInfo(PullRequest pullRequest)
+            {
+                return contentFilter.IsMatch(pullRequest.body);
+            }
         }
 
         private static class GitHubAPI
@@ -121,6 +181,40 @@ namespace UnityVersionBump.Core
                 return System.Text.Json.Nodes.JsonNode.Parse(await response.Content.ReadAsStreamAsync())!["number"]!.GetValue<long>();
             }
 
+            public static async Task ClosePullRequest(HttpClient httpClient, int prNumber)
+            {
+                // write comment
+                var commentResponse = await httpClient.PostAsync($"issues/{prNumber}/comments", JsonContent.Create(new
+                {
+                    body = "🛑 This PR is targeting a version that is no longer up-to-date. Closing this PR and creating a new PR for the newest version in its stead. 🛑"
+                }));
+                if (commentResponse.StatusCode != HttpStatusCode.Created)
+                {
+                    throw new HttpRequestException($"Expected '{HttpStatusCode.Created}'. Instead received '{commentResponse.StatusCode}'.\r\n{await commentResponse.Content.ReadAsStringAsync()}", null, commentResponse.StatusCode);
+                }
+
+                // get PR
+                var prInfo = JsonSerializer.Deserialize<PullRequest>(await (await httpClient.GetAsync("pulls/" + prNumber)).Content.ReadAsStringAsync())!;
+
+                // close PR
+                var response = await httpClient.PostAsync("pulls/" + prNumber, JsonContent.Create(new
+                {
+                    state = "closed"
+                }));
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new HttpRequestException($"Expected '{HttpStatusCode.OK}'. Instead received '{response.StatusCode}'.\r\n{await response.Content.ReadAsStringAsync()}", null, response.StatusCode);
+                }
+
+                // delete branch
+                var deleteBranchResponse = await httpClient.DeleteAsync("git/refs/heads/" + prInfo.head.label.Split(":")[1]!);
+                if (deleteBranchResponse.StatusCode != HttpStatusCode.NoContent)
+                {
+                    throw new HttpRequestException($"Expected '{HttpStatusCode.NoContent}'. Instead received '{response.StatusCode}'.\r\n{await response.Content.ReadAsStringAsync()}", null, response.StatusCode);
+                }
+            }
+
             public static async Task ApplyLabels(HttpClient httpClient, long pullRequest, string[] commitInfoPullRequestLabels)
             {
                 if (commitInfoPullRequestLabels.Length == 0)
@@ -144,7 +238,15 @@ namespace UnityVersionBump.Core
         {
             public static string GenerateBody(UnityVersion currentVersion, UnityVersion targetVersion)
             {
-                return $"Bumps the [Unity Editor](https://unity3d.com/get-unity/download) version from `{currentVersion.ToUnityStringWithRevision()}` to `{targetVersion.ToUnityStringWithRevision()}`.\r\n\r\n{GenerateReleaseNotesLink(targetVersion)}";
+                return $"Bumps the [Unity Editor](https://unity3d.com/get-unity/download) version from `{currentVersion.ToUnityStringWithRevision()}` to `{targetVersion.ToUnityStringWithRevision()}`.\r\n\r\n{GenerateReleaseNotesLink(targetVersion)}\r\n\r\n<!--uvb {GenerateJSONInfo(targetVersion)} -->";
+            }
+
+            private static string GenerateJSONInfo(UnityVersion targetVersion)
+            {
+                return JsonSerializer.Serialize(new PullRequestInfo(new PullRequestInfoData(){
+                    package = "editor", 
+                    version = targetVersion.ToUnityStringWithRevision()
+                }));
             }
 
             private static string GenerateReleaseNotesLink(UnityVersion targetVersion)
@@ -159,13 +261,59 @@ namespace UnityVersionBump.Core
             }
         }
 
+        public static async Task<int?> CleanupAndCheckForAlreadyExistingPR(HttpClient httpClient, CommitInfo commitInfo, RepositoryInfo repositoryInfo, UnityVersion currentVersion, UnityVersion? targetVersion)
+        {
+            var latestPR = await CloseAllButLatestPR(httpClient);
+
+            // if there's no new version, the update is done
+            if (targetVersion == null)
+            {
+                return null;
+            }
+
+            if (latestPR != null)
+            {
+                // if there is a PR matching (or newer than) the target version
+                if (latestPR.Value.version.CompareTo(targetVersion) >= 0)
+                {
+                    // return that PR number
+                    return latestPR.Value.number;
+                }
+
+                // if there is a new version available and the existing PR is older, close it
+                await GitHubAPI.ClosePullRequest(httpClient, latestPR.Value.number);
+            }
+
+            return null;
+        }
+
+        private static async Task<(int number, UnityVersion version)?> CloseAllButLatestPR(HttpClient httpClient)
+        {
+            var currentEditorPullRequests = await EditorPRs.GetActivePRs(httpClient);
+            var sortedFromOldestToNewestVersion = currentEditorPullRequests.OrderBy(tuple => tuple.version).ToList();
+            var latestPR = sortedFromOldestToNewestVersion.FirstOrDefault();
+
+            // if there is more than one PR
+            if (latestPR != default)
+            {
+                // close all that are older than the latest
+                var outdatedPRs = sortedFromOldestToNewestVersion.Where(tuple => tuple.number != latestPR.number);
+                foreach (var (prNumber, _) in outdatedPRs)
+                {
+                    await GitHubAPI.ClosePullRequest(httpClient, prNumber);
+                }
+                return latestPR;
+            }
+
+            return null;
+        }
+
         public static async Task<string> CreatePullRequestIfTargetVersionNewer(HttpClient httpClient, CommitInfo commitInfo, RepositoryInfo repositoryInfo, UnityVersion currentVersion, UnityVersion targetVersion)
         {
             if (currentVersion.GetComparable() >= targetVersion.GetComparable())
             {
                 return "";
             }
-
 
             var baseBranch = await GitHubAPI.GetDefaultBranchName(httpClient, repositoryInfo);
             var shaHashOfLastCommitOnBaseBranch = await GitHubAPI.GetLastCommitSHAHash(httpClient, baseBranch);
