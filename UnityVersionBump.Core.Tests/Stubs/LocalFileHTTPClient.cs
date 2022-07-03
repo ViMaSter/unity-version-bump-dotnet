@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -24,21 +25,22 @@ namespace UnityVersionBump.Core.Tests.Stubs
         {
             var executingAssembly = Assembly.GetExecutingAssembly();
             Assert.NotNull(request.RequestUri);
-            var path = $"{executingAssembly.GetName().Name}.{_resourceStreamPathToResponse}.{request.Method}{request.RequestUri.AbsolutePath.Replace("/", ".")}".Replace("-", "_");
+            var path = new Regex("[^\\/.a-zA-Z0-9_]").Replace($"{executingAssembly.GetName().Name}.{_resourceStreamPathToResponse}.{request.Method}{request.RequestUri.PathAndQuery.Replace("/", ".")}.out", "_");
             IEnumerable<string> list = path.Split(".");
             list = list.Select(entry =>
             {
-                if (short.TryParse(entry[0].ToString(), out _))
+                if (long.TryParse(entry, out _))
                 {
                     return "_" + entry;
                 }
+
                 return entry;
             });
 
             var stream = executingAssembly.GetManifestResourceStream(string.Join(".", list));
             if (stream == null)
             {
-                throw new NotImplementedException($"No response for the following request exists: {request.Method} {request.RequestUri.AbsolutePath}");
+                throw new NotImplementedException($"No response for the following request exists: {request.Method} {request.RequestUri.PathAndQuery}");
             }
 
             using var streamReader = new StreamReader(stream);

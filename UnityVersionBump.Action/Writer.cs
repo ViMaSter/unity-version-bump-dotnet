@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-class Writer : DelegatingHandler
+public class Writer : DelegatingHandler
 {
     protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {
@@ -10,9 +10,20 @@ class Writer : DelegatingHandler
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var res = base.SendAsync(request, cancellationToken);
+        var path = $"{request.Method}/{new Regex("[^\\/.a-zA-Z0-9_]").Replace(request.RequestUri.PathAndQuery[1..], "_")}.out";
+        path = string.Join("/", path.Split("/").Select(entry =>
+        {
+            if (long.TryParse(entry, out _))
+            {
+                return "_" + entry;
+            }
+
+            return entry;
+        }));
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         File.WriteAllText(
-            $"{request.Method}_{new Regex("\\W").Replace(request.RequestUri.ToString(), "_")}", 
-            res.Result.Content.ReadAsStringAsync(cancellationToken).Result
+            path,
+            $"{(int)res.Result.StatusCode}\n{res.Result.Content.ReadAsStringAsync(cancellationToken).Result}"
         );
         return res;
     }
