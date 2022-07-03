@@ -2,8 +2,8 @@
 
 public class InvalidVersionSyntaxException : Exception
 {
-    public InvalidVersionSyntaxException(string fullVersion)
-        : base($"Cannot parse version string '{fullVersion}'")
+    public InvalidVersionSyntaxException(string fullVersion, string hintForFix)
+        : base($"Cannot parse version string '{fullVersion}'. ${hintForFix}")
     {
     }
 }

@@ -87,7 +87,7 @@ public class UnityVersion : IComparable
         var matchAttempt = _versionNameMatcher.Match(fullVersion);
         if (!matchAttempt.Success)
         {
-            throw new InvalidVersionSyntaxException(fullVersion);
+            throw new InvalidVersionSyntaxException(fullVersion, _versionNameMatcher.ToString());
         }
 
         foreach (var (partName, maximumLength) in _versionPartMaximumLength)

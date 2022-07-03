@@ -5,11 +5,12 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
 {
     public class BasicRevisionParsing
     {
+        private const string CORRECT_REVISION = "1234567890ab";
         private static readonly string[] InvalidRevisions = {
             "1234567890a",   // too short
             "1234567890abc", // too long
             "1234567890aq",  // invalid character (q)
-            "1234567890Ab" // uppercase character (A)
+            "1234567890Ab"   // uppercase character (A)
         };
 
         [TestCaseSource(nameof(InvalidRevisions))]
