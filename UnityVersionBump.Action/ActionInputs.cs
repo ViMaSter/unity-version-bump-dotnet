@@ -38,7 +38,7 @@ namespace UnityVersionBump.Action
         {
             get;
             set;
-        } = "unity";
+        } = "unityversionbump";
 
         public string[] releaseStreams = null!;
 
