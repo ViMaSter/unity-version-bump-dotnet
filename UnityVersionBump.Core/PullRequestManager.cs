@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using UnityVersionBump.Core.GitHubActionsData;
 using UnityVersionBump.Core.GitHubActionsData.Models;
+using UnityVersionBump.Core.GitHubActionsData.Models.Branches;
+using UnityVersionBump.Core.GitHubActionsData.Models.PullRequests;
 
 namespace UnityVersionBump.Core
 {
@@ -41,9 +43,9 @@ namespace UnityVersionBump.Core
         public static class EditorPRs
         {
             const string EDITOR_PACKAGE = "editor";
-            private static readonly Regex contentFilter = new Regex("<!--uvb(.*)-->");
+            private static readonly Regex ContentFilter = new("<!--uvb(.*)-->");
 
-            public static async Task<IList<(int number, UnityVersion version)>> GetActivePRs(HttpClient httpClient)
+            public static async Task<IList<(PullRequest pullRequest, UnityVersion version)>> GetActivePRs(HttpClient httpClient)
             {
                 var pullRequests = new List<PullRequest>();
                 var nextPage = 1;
@@ -51,9 +53,9 @@ namespace UnityVersionBump.Core
                 {
                     var response = await httpClient.GetAsync($"pulls?per_page=100&page={nextPage}");
                     var contentAsString = await response.Content.ReadAsStringAsync();
-                    var parsedData = JsonSerializer.Deserialize<IEnumerable<PullRequest>>(contentAsString);
+                    var parsedData = JsonSerializer.Deserialize<IEnumerable<PullRequest>>(contentAsString)!.ToList();
                     pullRequests.AddRange(parsedData);
-                    if (parsedData.Count() < 100)
+                    if (parsedData.Count < 100)
                     {
                         nextPage = -1;
                         break;
@@ -70,9 +72,9 @@ namespace UnityVersionBump.Core
                     .ToList();
             }
 
-            private static (int number, UnityVersion) ConvertToPRNumberAndUnityVersion((PullRequest pullRequest, PullRequestInfo pullRequestContent) package)
+            private static (PullRequest pullRequest, UnityVersion) ConvertToPRNumberAndUnityVersion((PullRequest pullRequest, PullRequestInfo pullRequestContent) package)
             {
-                return (package.pullRequest.number, ProjectVersion.FromProjectVersionTXTSyntax(package.pullRequestContent.data.version));
+                return (package.pullRequest, ProjectVersion.FromProjectVersionTXTSyntax(package.pullRequestContent.data.version));
             }
 
             private static bool IsEditorPackage((PullRequest pullRequest, PullRequestInfo pullRequestContent) package)
@@ -82,13 +84,13 @@ namespace UnityVersionBump.Core
 
             private static (PullRequest pullRequest, PullRequestInfo pullRequestContent) ParsePullRequestInfo(PullRequest pullRequest)
             {
-                var pullRequestContent = JsonSerializer.Deserialize<PullRequestInfo>(contentFilter.Match(pullRequest.body).Groups[1].Value)!;
+                var pullRequestContent = JsonSerializer.Deserialize<PullRequestInfo>(ContentFilter.Match(pullRequest.body).Groups[1].Value)!;
                 return (pullRequest, pullRequestContent);
             }
 
             private static bool PullRequestHasInfo(PullRequest pullRequest)
             {
-                return contentFilter.IsMatch(pullRequest.body);
+                return ContentFilter.IsMatch(pullRequest.body);
             }
         }
 
@@ -208,10 +210,15 @@ namespace UnityVersionBump.Core
                 }
 
                 // delete branch
-                var deleteBranchResponse = await httpClient.DeleteAsync("git/refs/heads/" + prInfo.head.label.Split(":")[1]!);
+                await DeleteBranch(httpClient, prInfo.head.label.Split(":")[1]);
+            }
+
+            public static async Task DeleteBranch(HttpClient httpClient, string branchName)
+            {
+                var deleteBranchResponse = await httpClient.DeleteAsync("git/refs/heads/" + branchName);
                 if (deleteBranchResponse.StatusCode != HttpStatusCode.NoContent)
                 {
-                    throw new HttpRequestException($"Expected '{HttpStatusCode.NoContent}'. Instead received '{response.StatusCode}'.\r\n{await response.Content.ReadAsStringAsync()}", null, response.StatusCode);
+                    throw new HttpRequestException($"Expected '{HttpStatusCode.NoContent}'. Instead received '{deleteBranchResponse.StatusCode}'.\r\n{await deleteBranchResponse.Content.ReadAsStringAsync()}", null, deleteBranchResponse.StatusCode);
                 }
             }
 
@@ -231,6 +238,18 @@ namespace UnityVersionBump.Core
                 {
                     throw new HttpRequestException($"Expected '{HttpStatusCode.OK}'. Instead received '{response.StatusCode}'.\r\n{await response.Content.ReadAsStringAsync()}", null, response.StatusCode);
                 }
+            }
+
+            public static async Task<IEnumerable<string>> GetAllBranches(HttpClient httpClient)
+            {
+                var response = await httpClient.GetAsync("branches");
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new HttpRequestException($"Expected '{HttpStatusCode.OK}'. Instead received '{response.StatusCode}'.\r\n{await response.Content.ReadAsStringAsync()}", null, response.StatusCode);
+                }
+
+                return JsonSerializer.Deserialize<IEnumerable<Branch>>(await response.Content.ReadAsStringAsync())!.Select(branch => branch.name);
             }
         }
 
@@ -263,7 +282,7 @@ namespace UnityVersionBump.Core
 
         public static async Task<int?> CleanupAndCheckForAlreadyExistingPR(HttpClient httpClient, CommitInfo commitInfo, RepositoryInfo repositoryInfo, UnityVersion currentVersion, UnityVersion? targetVersion)
         {
-            var latestPR = await CloseAllButLatestPR(httpClient);
+            var latestPR = await CloseAllButLatestPR(httpClient, commitInfo);
 
             // if there's no new version, the update is done
             if (targetVersion == null)
@@ -287,22 +306,30 @@ namespace UnityVersionBump.Core
             return null;
         }
 
-        private static async Task<(int number, UnityVersion version)?> CloseAllButLatestPR(HttpClient httpClient)
+        private static async Task<(int number, UnityVersion version)?> CloseAllButLatestPR(HttpClient httpClient, CommitInfo commitInfo)
         {
             var currentEditorPullRequests = await EditorPRs.GetActivePRs(httpClient);
-            var sortedFromOldestToNewestVersion = currentEditorPullRequests.OrderBy(tuple => tuple.version).ToList();
-            var latestPR = sortedFromOldestToNewestVersion.FirstOrDefault();
+            var branchesOfPRs = currentEditorPullRequests.Select(entry => entry.pullRequest.head.label.Split(":")[1]);
+            var danglingBranches = (await GitHubAPI.GetAllBranches(httpClient)).Where(branch => branch.StartsWith(commitInfo.PullRequestPrefix)).Where(branch => !branchesOfPRs.Contains(branch));
+            foreach (var danglingBranch in danglingBranches)
+            {
+                await GitHubAPI.DeleteBranch(httpClient, danglingBranch);
+            }
+
+            var sortedFromOldestToNewestVersion = currentEditorPullRequests.OrderBy(tuple => tuple.version).Select(entry => (entry.pullRequest.number, entry.version)).ToList();
+
+            var latestVersionByPR = sortedFromOldestToNewestVersion.FirstOrDefault();
 
             // if there is more than one PR
-            if (latestPR != default)
+            if (latestVersionByPR != default)
             {
                 // close all that are older than the latest
-                var outdatedPRs = sortedFromOldestToNewestVersion.Where(tuple => tuple.number != latestPR.number);
+                var outdatedPRs = sortedFromOldestToNewestVersion.Where(tuple => tuple.number!= latestVersionByPR.number);
                 foreach (var (prNumber, _) in outdatedPRs)
                 {
                     await GitHubAPI.ClosePullRequest(httpClient, prNumber);
                 }
-                return latestPR;
+                return latestVersionByPR;
             }
 
             return null;

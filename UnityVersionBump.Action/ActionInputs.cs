@@ -33,7 +33,7 @@ namespace UnityVersionBump.Action
 
         [Option('p', "pullRequestPrefix",
             Required = false,
-            HelpText = "Prefix used by pull requests created by this action (defaults to 'unity')")]
+            HelpText = "Prefix used by pull requests created by this action (defaults to 'unityversionbump')")]
         public string PullRequestPrefix
         {
             get;
