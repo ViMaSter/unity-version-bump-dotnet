@@ -1,10 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using System.Xml;
 using UnityVersionBump.Core.GitHubActionsData;
 using UnityVersionBump.Core.GitHubActionsData.Models;
 using UnityVersionBump.Core.GitHubActionsData.Models.Branches;
@@ -37,7 +34,7 @@ namespace UnityVersionBump.Core
             public string EmailAddress { get; set; } = null!;
             public string APIToken { get; set; } = null!;
             public string[] PullRequestLabels { get; set; } = null!;
-            public string PullRequestPrefix { get; set; }
+            public string PullRequestPrefix { get; set; } = null!;
         }
 
         public static class EditorPRs

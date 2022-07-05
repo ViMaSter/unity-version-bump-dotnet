@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityVersionBump.Core.Tests.Stubs;
 
 namespace UnityVersionBump.Core.Tests.UnitTests.PullRequestManager;
 
-class Edgecases
+class EdgeCases
 {
     private readonly Core.PullRequestManager.RepositoryInfo _repositoryInfo = new Core.PullRequestManager.RepositoryInfo
     {
@@ -28,7 +24,7 @@ class Edgecases
 
 
     [TestCase]
-    public async Task FailsIfBranchCannotBeCreated()
+    public void FailsIfBranchCannotBeCreated()
     {
         var failingClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.FailedBranch")).SetupGitHub(_repositoryInfo, _commitInfo);
 
@@ -45,7 +41,7 @@ class Edgecases
     }
 
     [TestCase]
-    public async Task FailsIfLabelCannotBeAttached()
+    public void FailsIfLabelCannotBeAttached()
     {
         var failingClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.FailedLabel")).SetupGitHub(_repositoryInfo, _commitInfo);
 

@@ -93,19 +93,19 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
     var highestVersion = ProjectVersion.GetLatestFromHub(clientFactory.CreateClient("unityHub"), inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>));
     GitHubActionsUtilities.GitHubActionsWriteLine($"Current Unity Version: {currentVersion.ToUnityStringWithRevision()}");
 
-    var alreadyUpToDatePR = await PullRequestManager.CleanupAndCheckForAlreadyExistingPR(httpClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-    if (alreadyUpToDatePR != null)
-    {
-        GitHubActionsUtilities.GitHubActionsWriteLine($"PR https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{alreadyUpToDatePR} is newer or identical to {highestVersion.ToUnityStringWithRevision()}");
-        Environment.Exit(0);
-    }
-
     // if there is no new version, exit gracefully
     if (highestVersion == null)
     {
         GitHubActionsUtilities.GitHubActionsWriteLine("No newer version available on selected streams");
         Environment.Exit(0);
         return;
+    }
+
+    var alreadyUpToDatePR = await PullRequestManager.CleanupAndCheckForAlreadyExistingPR(httpClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+    if (alreadyUpToDatePR != null)
+    {
+        GitHubActionsUtilities.GitHubActionsWriteLine($"PR https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{alreadyUpToDatePR} is newer or identical to {highestVersion.ToUnityStringWithRevision()}");
+        Environment.Exit(0);
     }
 
     GitHubActionsUtilities.GitHubActionsWriteLine($"Latest Unity Version:  {highestVersion.ToUnityStringWithRevision()}");

@@ -27,16 +27,16 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         {
             if (stream == Core.UnityVersion.ReleaseStreamType.LTS)
             {
-                Assert.IsTrue(Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[]{ stream }).IsLTS);
+                Assert.IsTrue(Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[]{ stream })!.IsLTS);
                 return;
             }
-            Assert.AreEqual(stream, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[]{ stream }).ReleaseStream);
+            Assert.AreEqual(stream, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[]{ stream })!.ReleaseStream);
         }
 
         [TestCase]
         public void GetsVersionForAllStreams()
         {
-            CollectionAssert.Contains(AllStreams, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, AllStreams).ReleaseStream);
+            CollectionAssert.Contains(AllStreams, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, AllStreams)!.ReleaseStream);
         }
 
         [TestCase]
@@ -50,7 +50,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
                     subset.Add(releaseStreamType);
                     continue;
                 }
-                CollectionAssert.Contains(subset, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, subset).ReleaseStream);
+                CollectionAssert.Contains(subset, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, subset)!.ReleaseStream);
                 subset.Add(releaseStreamType);
             }
         }

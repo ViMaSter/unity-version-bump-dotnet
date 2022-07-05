@@ -3,12 +3,12 @@
     public class PullRequest
     {
         public int number { get; set; }
-        public string body { get; set; }
-        public Head head { get; set; }
+        public string body { get; set; } = null!;
+        public Head head { get; set; } = null!;
     }
 
     public class Head
     {
-        public string label { get; set; }
+        public string label { get; set; } = null!;
     }
 }

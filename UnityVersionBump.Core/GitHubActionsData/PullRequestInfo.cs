@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-
-namespace UnityVersionBump.Core.GitHubActionsData
+﻿namespace UnityVersionBump.Core.GitHubActionsData
 {
     public record PullRequestInfo
     {
@@ -21,7 +14,7 @@ namespace UnityVersionBump.Core.GitHubActionsData
 
     public record PullRequestInfoData
     {
-        public string package { get; set; }
-        public string version { get; set; }
+        public string package { get; set; } = null!;
+        public string version { get; set; } = null!;
     }
 }

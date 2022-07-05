@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityVersionBump.Core.Tests.Stubs;
@@ -15,8 +12,7 @@ class DeletesDanglingBranches
     private Core.PullRequestManager.CommitInfo commitInfo;
     private HttpClient mockedHTTPClient;
 
-    [SetUp]
-    public void Setup()
+    public DeletesDanglingBranches()
     {
         repositoryInfo = new Core.PullRequestManager.RepositoryInfo
         {

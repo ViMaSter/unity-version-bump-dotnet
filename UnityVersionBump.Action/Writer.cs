@@ -10,7 +10,7 @@ public class Writer : DelegatingHandler
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var res = base.SendAsync(request, cancellationToken);
-        var path = $"{request.Method}/{new Regex("[^\\/.a-zA-Z0-9_]").Replace(request.RequestUri.PathAndQuery[1..], "_")}.out";
+        var path = $"{request.Method}/{new Regex("[^\\/.a-zA-Z0-9_]").Replace(request.RequestUri!.PathAndQuery[1..], "_")}.out";
         path = string.Join("/", path.Split("/").Select(entry =>
         {
             if (long.TryParse(entry, out _))

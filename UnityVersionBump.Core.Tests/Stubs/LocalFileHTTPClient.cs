@@ -24,8 +24,7 @@ namespace UnityVersionBump.Core.Tests.Stubs
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var executingAssembly = Assembly.GetExecutingAssembly();
-            Assert.NotNull(request.RequestUri);
-            var path = new Regex("[^\\/.a-zA-Z0-9_]").Replace($"{executingAssembly.GetName().Name}.{_resourceStreamPathToResponse}.{request.Method}{request.RequestUri.PathAndQuery.Replace("/", ".")}.out", "_");
+            var path = new Regex("[^\\/.a-zA-Z0-9_]").Replace($"{executingAssembly.GetName().Name}.{_resourceStreamPathToResponse}.{request.Method}{request.RequestUri!.PathAndQuery.Replace("/", ".")}.out", "_");
             IEnumerable<string> list = path.Split(".");
             list = list.Select(entry =>
             {
