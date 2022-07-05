@@ -25,6 +25,24 @@ internal class Comparing
         }
     }
 
+    [TestCaseSource(nameof(OrderedReleases))]
+    public void MatchingVersionsAreEqual(Core.PackageVersion packageVersion)
+    {
+        // ReSharper disable once EqualExpressionComparison (needed to hit coverage)
+        Assert.IsTrue(packageVersion.Equals(packageVersion));
+        Assert.AreEqual(packageVersion, new Core.PackageVersion(packageVersion.ToString()));
+
+        Assert.AreEqual(packageVersion.GetHashCode(), packageVersion.GetHashCode());
+        Assert.AreEqual(packageVersion.GetHashCode(), new Core.PackageVersion(packageVersion.ToString()).GetHashCode());
+    }
+
+    [TestCaseSource(nameof(OrderedReleases))]
+    public void CanCompareAgainstNull(Core.PackageVersion packageVersion)
+    {
+        Assert.AreEqual(1, packageVersion.CompareTo(null));
+        Assert.AreEqual(1, packageVersion.CompareTo("not same type"));
+    }
+
     [TestCase]
     public void CanSortReleases()
     {

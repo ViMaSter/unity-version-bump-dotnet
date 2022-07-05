@@ -77,15 +77,6 @@ public class PackageVersion : IComparable
             _currentValues[partName] = int.Parse(matchAttempt.Groups[partName.ToString().ToLowerInvariant()].Value);
         }
 
-        var requiredFields = new[]{ VersionPart.Major, VersionPart.Minor, VersionPart.Patch };
-        foreach (var requiredField in requiredFields)
-        {
-            if (!_currentValues.ContainsKey(requiredField))
-            {
-                throw new InvalidVersionSyntaxException(fullVersion, "Missing required part: "+requiredField);
-            }
-        }
-
         if (!string.IsNullOrEmpty(_suffix) && !_currentValues.ContainsKey(VersionPart.SuffixNumber))
         {
             throw new InvalidVersionSyntaxException(fullVersion, "Suffix needs to include a number");
