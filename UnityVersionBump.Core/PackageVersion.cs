@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using UnityVersionBump.Core.Exceptions;
 
 namespace UnityVersionBump.Core;
 
+[ExcludeFromCodeCoverage]
 public class ToStringJsonConverter : JsonConverter
 {
     public override bool CanConvert(Type objectType)
@@ -16,14 +18,11 @@ public class ToStringJsonConverter : JsonConverter
         writer.WriteValue(value.ToString());
     }
 
-    public override bool CanRead
-    {
-        get { return false; }
-    }
+    public override bool CanRead => true;
 
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
-        throw new NotImplementedException();
+        return new PackageVersion((string)reader.Value);
     }
 }
 

@@ -7,23 +7,20 @@ namespace UnityVersionBump.Core.UPM
     {
         public class Manifest
         {
-            public Dictionary<string, string> dependencies { get; set; }
+            public Dictionary<string, Core.PackageVersion> dependencies { get; set; }
+            public List<ScopedRegistries> scopedRegistries { get; set; }
+            public List<string> testables { get; set; }
         }
     }
     public static class ManifestParser
     {
-        public static Dictionary<string, PackageVersion> Parse(string contents)
+        public static Manifest Parse(string contents)
         {
-            return JsonConvert.DeserializeObject<Manifest>(contents)!.dependencies.ToDictionary(entry => entry.Key, entry => new PackageVersion(entry.Value));
+            return JsonConvert.DeserializeObject<Manifest>(contents);
         }
-        public static string Generate(Dictionary<string, PackageVersion> dependencies, IEnumerable<ScopedRegistries> scopedRegistries, IEnumerable<string> testables)
+        public static string Generate(Manifest manifest)
         {
-            return JsonConvert.SerializeObject(new
-            {
-                dependencies,
-                scopedRegistries,
-                testables,
-            });
+            return JsonConvert.SerializeObject(manifest);
         }
     }
 

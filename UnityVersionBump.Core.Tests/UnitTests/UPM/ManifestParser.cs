@@ -4,6 +4,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityVersionBump.Core.UPM;
+using UnityVersionBump.Core.UPM.Models;
 
 namespace UnityVersionBump.Core.Tests.UnitTests.UPM
 {
@@ -67,27 +68,46 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
             var manifestContentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.UPM.Resources.GG-JointJustice-manifest.json");
             using var streamReader = new StreamReader(manifestContentStream);
             var manifestContent = streamReader.ReadToEnd();
-            var actualOutput = UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent);
+            var actualOutput = UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent).dependencies;
             Assert.AreEqual(versionByPackage, actualOutput);
         }
 
         [TestCase]
         public void GeneratesOutput()
         {
-
             var manifestContentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.UPM.Resources.GG-JointJustice-manifest.json");
             using var streamReader = new StreamReader(manifestContentStream);
             var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()));
-            var actualOutput = UnityVersionBump.Core.UPM.ManifestParser.Generate(versionByPackage, new[]
+            var actualOutput = UnityVersionBump.Core.UPM.ManifestParser.Generate(new Manifest()
             {
-                new ScopedRegistries()
+                dependencies = versionByPackage,
+                scopedRegistries = new List<ScopedRegistries>()
                 {
-                    name = "OpenUPM",
-                    scopes = new[] { "com.inklestudios.ink-unity-integration" },
-                    url = "https://package.openupm.com"
-                }
-            }, new[] { "com.unity.inputsystem" });
+                    new()
+                    {
+                        name = "OpenUPM",
+                        scopes = new[] { "com.inklestudios.ink-unity-integration" },
+                        url = "https://package.openupm.com"
+                    }
+                },
+                testables = new List<string>() { "com.unity.inputsystem" }
+            });
             Assert.AreEqual(manifestContent, actualOutput);
+        }
+
+        [TestCase]
+        public void IsDeterministicStartingFromJSON()
+        {
+            var manifestContentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.UPM.Resources.GG-JointJustice-manifest.json");
+            using var streamReader = new StreamReader(manifestContentStream);
+            var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()))!;
+            Assert.AreEqual(manifestContent, UnityVersionBump.Core.UPM.ManifestParser.Generate(UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent)));
+        }
+
+        [TestCase]
+        public void IsDeterministicStartingFromDependenciesObject()
+        {
+            Assert.AreEqual(versionByPackage, UnityVersionBump.Core.UPM.ManifestParser.Parse(UnityVersionBump.Core.UPM.ManifestParser.Generate(new Manifest(){dependencies = versionByPackage})).dependencies);
         }
     }
 }
