@@ -1,5 +1,5 @@
-using System.Text.Json;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using UnityVersionBump.Core.Exceptions;
 using UnityVersionBump.Core.SerializedResponses.UnityHub;
 
@@ -44,7 +44,7 @@ namespace UnityVersionBump.Core
             return $"m_EditorVersion: {unityVersion.ToUnityString()}\nm_EditorVersionWithRevision: {unityVersion.ToUnityStringWithRevision()}\n";
         }
 
-        public static UnityVersion? GetLatestFromHub(HttpClient httpClient, IEnumerable<UnityVersion.ReleaseStreamType> consideredReleaseStreams)
+        public static async Task<UnityVersion> GetLatestFromHub(HttpClient httpClient, IEnumerable<UnityVersion.ReleaseStreamType> consideredReleaseStreams)
         {
             var qualifiedReleaseStreams = consideredReleaseStreams.ToList();
             if (!qualifiedReleaseStreams.Any())
@@ -52,13 +52,13 @@ namespace UnityVersionBump.Core
                 throw new ArgumentException("Need to specify at least one release stream", nameof(consideredReleaseStreams));
             }
 
-            var httpResponse = httpClient.GetAsync(RELEASES_PATH).ConfigureAwait(false).GetAwaiter().GetResult();
+            var httpResponse = await httpClient.GetAsync(RELEASES_PATH);
             if (!httpResponse.IsSuccessStatusCode)
             {
                 throw new InvalidDataException($"'{RELEASES_PATH}' responded with status code {httpResponse.StatusCode}");
             }
 
-            var serverResponse = JsonSerializer.Deserialize<Response>(httpResponse.Content.ReadAsStream());
+            var serverResponse = JsonConvert.DeserializeObject<Response>(await httpResponse.Content.ReadAsStringAsync());
             if (serverResponse == null)
             {
                 throw new NotSupportedException($"'{RELEASES_PATH}' responded with data that couldn't be deserialized:{Environment.NewLine}{httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult()}");

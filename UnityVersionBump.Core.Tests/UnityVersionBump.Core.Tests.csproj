@@ -134,6 +134,11 @@
     <None Remove="UnitTests\PullRequestManager\Resources\TwoPagesOfPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
     <None Remove="UnitTests\PullRequestManager\Resources\TwoPagesOfPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
     <None Remove="UnitTests\PullRequestManager\Resources\TwoPagesOfPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_2.out" />
+    <None Remove="UnitTests\UPM\Resources\GG-JointJustice-manifest.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="UnitTests\UPM\Resources\GG-JointJustice-manifest.json" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json;
 using UnityVersionBump.Core.UPM.SerializedResponses;
 
 namespace UnityVersionBump.Core.UPM
@@ -23,7 +23,7 @@ namespace UnityVersionBump.Core.UPM
             {
                 throw new NotSupportedException($"Unexpected return code {(int)response.StatusCode}: '{await response.Content.ReadAsStringAsync()}'");
             }
-            return JsonSerializer.Deserialize<PackageInfo>(await response.Content.ReadAsStringAsync())!;
+            return JsonConvert.DeserializeObject<PackageInfo>(await response.Content.ReadAsStringAsync())!;
         }
 
         public async Task<PackageVersion> GetLatestVersion(string packageName)

@@ -1,9 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using UnityVersionBump.Core.GitHubActionsData;
-using UnityVersionBump.Core.GitHubActionsData.Models;
 using UnityVersionBump.Core.GitHubActionsData.Models.Branches;
 using UnityVersionBump.Core.GitHubActionsData.Models.PullRequests;
 
@@ -50,7 +49,7 @@ namespace UnityVersionBump.Core
                 {
                     var response = await httpClient.GetAsync($"pulls?per_page=100&page={nextPage}");
                     var contentAsString = await response.Content.ReadAsStringAsync();
-                    var parsedData = JsonSerializer.Deserialize<IEnumerable<PullRequest>>(contentAsString)!.ToList();
+                    var parsedData = JsonConvert.DeserializeObject<IEnumerable<PullRequest>>(contentAsString)!.ToList();
                     pullRequests.AddRange(parsedData);
                     if (parsedData.Count < 100)
                     {
@@ -81,7 +80,7 @@ namespace UnityVersionBump.Core
 
             private static (PullRequest pullRequest, PullRequestInfo pullRequestContent) ParsePullRequestInfo(PullRequest pullRequest)
             {
-                var pullRequestContent = JsonSerializer.Deserialize<PullRequestInfo>(ContentFilter.Match(pullRequest.body).Groups[1].Value)!;
+                var pullRequestContent = JsonConvert.DeserializeObject<PullRequestInfo>(ContentFilter.Match(pullRequest.body).Groups[1].Value)!;
                 return (pullRequest, pullRequestContent);
             }
 
@@ -96,7 +95,7 @@ namespace UnityVersionBump.Core
             public static async Task<string> GetDefaultBranchName(HttpClient httpClient, RepositoryInfo repositoryInfo)
             {
                 var response = await httpClient.GetAsync($"/repos/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}");
-                return System.Text.Json.Nodes.JsonNode.Parse(await response.Content.ReadAsStreamAsync())!["default_branch"]!.ToString();
+                return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!["default_branch"];
             }
 
             public static async Task<string> CreateBlobForContent(HttpClient httpClient, string newProjectVersionTXTContent)
@@ -106,7 +105,7 @@ namespace UnityVersionBump.Core
                     encoding = "utf-8",
                     content = newProjectVersionTXTContent
                 }));
-                return System.Text.Json.Nodes.JsonNode.Parse(await response.Content.ReadAsStreamAsync())!["sha"]!.ToString();
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())!["sha"];
             }
 
             public static async Task<string> CreateTree(HttpClient httpClient, string parentCommitSHAHash, string prefixToProjectSettingsTXT, string shaHashOfNewProjectVersionTXT)
@@ -127,13 +126,13 @@ namespace UnityVersionBump.Core
                 };
                 var response = await httpClient.PostAsync("git/trees", JsonContent.Create(body));
 
-                return System.Text.Json.Nodes.JsonNode.Parse(await response.Content.ReadAsStreamAsync())!["sha"]!.ToString();
+                return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!["sha"];
             }
 
             public static async Task<string> GetLastCommitSHAHash(HttpClient httpClient, string baseBranch)
             {
                 var response = await httpClient.GetAsync($"branches/{baseBranch}");
-                return System.Text.Json.Nodes.JsonNode.Parse(await response.Content.ReadAsStreamAsync())!["commit"]!["sha"]!.ToString();
+                return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!["commit"]["sha"];
             }
 
             public static async Task<string> CreateCommit(HttpClient httpClient, string commitMessage, string shaHasOfTreeForNewFileProjectVersionTXT, string shaHashOfLastCommitOnBaseBranch, CommitInfo commitInfo)
@@ -150,7 +149,7 @@ namespace UnityVersionBump.Core
                     }
                 }));
 
-                return System.Text.Json.Nodes.JsonNode.Parse(await response.Content.ReadAsStreamAsync())!["sha"]!.ToString();
+                return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!["sha"];
             }
 
             public static async Task CreateBranch(HttpClient httpClient, object branchName, string shaHashOfCommitOfTree)
@@ -177,7 +176,7 @@ namespace UnityVersionBump.Core
                     head = targetBranchName
                 }));
 
-                return System.Text.Json.Nodes.JsonNode.Parse(await response.Content.ReadAsStreamAsync())!["number"]!.GetValue<long>();
+                return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!["number"];
             }
 
             public static async Task ClosePullRequest(HttpClient httpClient, int prNumber)
@@ -193,7 +192,7 @@ namespace UnityVersionBump.Core
                 }
 
                 // get PR
-                var prInfo = JsonSerializer.Deserialize<PullRequest>(await (await httpClient.GetAsync("pulls/" + prNumber)).Content.ReadAsStringAsync())!;
+                var prInfo = JsonConvert.DeserializeObject<PullRequest>(await (await httpClient.GetAsync("pulls/" + prNumber)).Content.ReadAsStringAsync())!;
 
                 // close PR
                 var response = await httpClient.PostAsync("pulls/" + prNumber, JsonContent.Create(new
@@ -246,7 +245,7 @@ namespace UnityVersionBump.Core
                     throw new HttpRequestException($"Expected '{HttpStatusCode.OK}'. Instead received '{response.StatusCode}'.\r\n{await response.Content.ReadAsStringAsync()}", null, response.StatusCode);
                 }
 
-                return JsonSerializer.Deserialize<IEnumerable<Branch>>(await response.Content.ReadAsStringAsync())!.Select(branch => branch.name);
+                return JsonConvert.DeserializeObject<IEnumerable<Branch>>(await response.Content.ReadAsStringAsync())!.Select(branch => branch.name);
             }
         }
 
@@ -259,7 +258,7 @@ namespace UnityVersionBump.Core
 
             private static string GenerateJSONInfo(UnityVersion targetVersion)
             {
-                return JsonSerializer.Serialize(new PullRequestInfo(new PullRequestInfoData(){
+                return JsonConvert.SerializeObject(new PullRequestInfo(new PullRequestInfoData(){
                     package = "editor", 
                     version = targetVersion.ToUnityStringWithRevision()
                 }));

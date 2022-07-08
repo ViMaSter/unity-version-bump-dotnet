@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityVersionBump.Core.Tests.Stubs;
 
@@ -15,32 +16,32 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         [TestCase]
         public void ThrowsWhenSpecifyingNoStream()
         {
-            Assert.Throws<ArgumentException>(() => {
-                Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, Array.Empty<Core.UnityVersion.ReleaseStreamType>());
+            Assert.ThrowsAsync<ArgumentException>(async () => {
+                await Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, Array.Empty<Core.UnityVersion.ReleaseStreamType>());
             });
         }
 
         private static Core.UnityVersion.ReleaseStreamType[] AllStreams => Enum.GetValues<Core.UnityVersion.ReleaseStreamType>();
 
         [TestCaseSource(nameof(AllStreams))]
-        public void GetsVersionForSpecificStream(Core.UnityVersion.ReleaseStreamType stream)
+        public async Task GetsVersionForSpecificStream(Core.UnityVersion.ReleaseStreamType stream)
         {
             if (stream == Core.UnityVersion.ReleaseStreamType.LTS)
             {
-                Assert.IsTrue(Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[]{ stream })!.IsLTS);
+                Assert.IsTrue((await Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[]{ stream })).IsLTS);
                 return;
             }
-            Assert.AreEqual(stream, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[]{ stream })!.ReleaseStream);
+            Assert.AreEqual(stream, (await Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, new[] { stream })).ReleaseStream);
         }
 
         [TestCase]
-        public void GetsVersionForAllStreams()
+        public async Task GetsVersionForAllStreams()
         {
-            CollectionAssert.Contains(AllStreams, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, AllStreams)!.ReleaseStream);
+            CollectionAssert.Contains(AllStreams, (await Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, AllStreams)).ReleaseStream);
         }
 
         [TestCase]
-        public void SubsetOnlyContainsExpectedReleases()
+        public async Task SubsetOnlyContainsExpectedReleases()
         {
             var subset = new List<Core.UnityVersion.ReleaseStreamType>();
             foreach (var releaseStreamType in AllStreams)
@@ -50,7 +51,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
                     subset.Add(releaseStreamType);
                     continue;
                 }
-                CollectionAssert.Contains(subset, Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, subset)!.ReleaseStream);
+                CollectionAssert.Contains(subset, (await Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, subset)).ReleaseStream);
                 subset.Add(releaseStreamType);
             }
         }
@@ -61,7 +62,10 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         {
             HttpClient clientWithoutPatchVersions = new(new LocalFileMessageHandler("UnitTests.ProjectVersion.Resources.NoPatchVersions"));
 
-            Assert.Throws<FileNotFoundException>(() => Core.ProjectVersion.GetLatestFromHub(clientWithoutPatchVersions, new List<Core.UnityVersion.ReleaseStreamType> { Core.UnityVersion.ReleaseStreamType.Patch }));
+            Assert.ThrowsAsync<FileNotFoundException>(async () =>
+            {
+                await Core.ProjectVersion.GetLatestFromHub(clientWithoutPatchVersions, new List<Core.UnityVersion.ReleaseStreamType> { Core.UnityVersion.ReleaseStreamType.Patch });
+            });
         }
     }
 }
