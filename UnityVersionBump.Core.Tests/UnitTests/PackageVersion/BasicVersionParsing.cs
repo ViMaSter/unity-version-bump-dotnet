@@ -28,18 +28,9 @@ namespace UnityVersionBump.Core.Tests.UnitTests.PackageVersion
             Assert.AreEqual(1, version.GetVersionPart(Core.PackageVersion.VersionPart.Major));
             Assert.AreEqual(2, version.GetVersionPart(Core.PackageVersion.VersionPart.Minor));
             Assert.AreEqual(3, version.GetVersionPart(Core.PackageVersion.VersionPart.Patch));
-            Assert.AreEqual(4, version.GetVersionPart(Core.PackageVersion.VersionPart.SuffixNumber));
+            Assert.AreEqual(5, version.GetVersionPart(Core.PackageVersion.VersionPart.SuffixNumber));
             Assert.Throws<KeyNotFoundException>(() => version.GetVersionPart(Core.PackageVersion.VersionPart.Suffix));
             Assert.AreEqual("preview.4", version._suffix);
-        }
-
-        [TestCase]
-        public void StableVersionWithSuffixWithoutNumberThrows()
-        {
-            Assert.Throws<InvalidVersionSyntaxException>(() =>
-            {
-                var ltsVersion = new Core.PackageVersion("2.0.0-preview");
-            });
         }
 
         [TestCase]

@@ -1,7 +1,8 @@
 ﻿// ReSharper disable InconsistentNaming
-namespace UnityVersionBump.Core.SerializedResponses;
 
-public class Official
+namespace UnityVersionBump.Core.SerializedResponses.UnityHub;
+
+public class Beta
 {
     public string version { get; set; } = null!;
     public string downloadUrl { get; set; } = null!;

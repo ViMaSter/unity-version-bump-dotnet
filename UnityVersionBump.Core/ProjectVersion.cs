@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using UnityVersionBump.Core.Exceptions;
-using UnityVersionBump.Core.SerializedResponses;
+using UnityVersionBump.Core.SerializedResponses.UnityHub;
 
 namespace UnityVersionBump.Core
 {

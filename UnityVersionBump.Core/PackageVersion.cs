@@ -74,12 +74,18 @@ public class PackageVersion : IComparable
                 continue;
             }
 
+            if (partName == VersionPart.SuffixNumber)
+            {
+                _currentValues[partName] = int.Parse(matchAttempt.Groups[partName.ToString().ToLowerInvariant()].Value)+1;
+                continue;
+            }
+
             _currentValues[partName] = int.Parse(matchAttempt.Groups[partName.ToString().ToLowerInvariant()].Value);
         }
 
         if (!string.IsNullOrEmpty(_suffix) && !_currentValues.ContainsKey(VersionPart.SuffixNumber))
         {
-            throw new InvalidVersionSyntaxException(fullVersion, "Suffix needs to include a number");
+            _currentValues[VersionPart.SuffixNumber] = 1;
         }
 
         IsPreview = _currentValues.ContainsKey(VersionPart.SuffixNumber);

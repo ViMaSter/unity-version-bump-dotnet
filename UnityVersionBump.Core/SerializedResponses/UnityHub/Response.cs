@@ -1,5 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
-namespace UnityVersionBump.Core.SerializedResponses;
+
+namespace UnityVersionBump.Core.SerializedResponses.UnityHub;
 
 public class Response
 {
