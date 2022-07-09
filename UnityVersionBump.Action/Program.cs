@@ -90,7 +90,7 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
 
     var projectVersionTxt = File.ReadAllText(Path.Join(Directory.GetCurrentDirectory(), inputs.UnityProjectPath, "ProjectSettings", "ProjectVersion.txt"));
     var currentVersion = ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
-    var highestVersion = ProjectVersion.GetLatestFromHub(clientFactory.CreateClient("unityHub"), inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>));
+    var highestVersion = await ProjectVersion.GetLatestFromHub(clientFactory.CreateClient("unityHub"), inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>));
     GitHubActionsUtilities.GitHubActionsWriteLine($"Current Unity Version: {currentVersion.ToUnityStringWithRevision()}");
 
     // if there is no new version, exit gracefully
