@@ -107,7 +107,19 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
         [TestCase]
         public void IsDeterministicStartingFromDependenciesObject()
         {
-            Assert.AreEqual(versionByPackage, UnityVersionBump.Core.UPM.ManifestParser.Parse(UnityVersionBump.Core.UPM.ManifestParser.Generate(new Manifest(){dependencies = versionByPackage})).dependencies);
+            Assert.AreEqual(versionByPackage, UnityVersionBump.Core.UPM.ManifestParser.Parse(UnityVersionBump.Core.UPM.ManifestParser.Generate(new Manifest() { dependencies = versionByPackage })).dependencies);
+        }
+
+        [TestCase]
+        public void GetsCorrespondingRegistry()
+        {
+            var manifestContentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.UPM.Resources.GG-JointJustice-manifest.json");
+            using var streamReader = new StreamReader(manifestContentStream);
+            var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()))!;
+            var manifest = UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent);
+
+            Assert.AreEqual(Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT, manifest.GetRegistryForPackage("com.unity.2d.tilemap"));
+            Assert.AreEqual("https://package.openupm.com", manifest.GetRegistryForPackage("com.inklestudios.ink-unity-integration"));
         }
     }
 }

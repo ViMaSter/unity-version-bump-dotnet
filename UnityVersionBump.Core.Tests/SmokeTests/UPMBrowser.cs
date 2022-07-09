@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using NUnit.Framework;
 
 namespace UnityVersionBump.Core.Tests.SmokeTests
 {
+    [ExcludeFromCodeCoverage]
     class UPMBrowser
     {
         private class LoggerStub : ILogger

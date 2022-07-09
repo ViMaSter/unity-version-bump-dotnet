@@ -22,6 +22,14 @@ internal class Comparing
             var laterRelease = OrderedReleases[i - 1];
             var earlierRelease = OrderedReleases[i];
             Assert.Less(earlierRelease, laterRelease);
+
+            Assert.IsTrue(earlierRelease < laterRelease);
+            Assert.IsFalse(earlierRelease > laterRelease);
+
+            Assert.IsFalse(earlierRelease < null);
+            Assert.IsTrue(null < earlierRelease);
+            Assert.IsTrue(earlierRelease > null);
+            Assert.IsFalse(null > earlierRelease);
         }
     }
 
