@@ -28,10 +28,12 @@ namespace UnityVersionBump.Core.UPM
             return JsonConvert.DeserializeObject<PackageInfo>(await response.Content.ReadAsStringAsync())!;
         }
 
-        public async Task<PackageVersion?> GetLatestVersion(string packageName)
+        public async Task<PackageVersion?> GetLatestVersion(string packageName, bool includePreReleasePackages)
         {
             var package = await GetPackage(packageName);
-            return package?.versions.Keys.Select(versionString => new PackageVersion(versionString)).OrderByDescending(a => a).First();
+            var all = package?.versions.Keys.Select(versionString => new PackageVersion(versionString)).ToList();
+            var where = all?.Where(version => includePreReleasePackages || !version.IsPreview).ToList();
+            return where?.OrderByDescending(a => a).First();
         }
     }
 }

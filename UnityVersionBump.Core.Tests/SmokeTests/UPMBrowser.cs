@@ -42,7 +42,7 @@ namespace UnityVersionBump.Core.Tests.SmokeTests
             const string PACKAGE_NAME = "com.unity.2d.ik";
             var browser = new UPM.Browser(new HttpClient(), null, UPM.Models.Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT);
 
-            var version = (await browser.GetLatestVersion(PACKAGE_NAME))!;
+            var version = (await browser.GetLatestVersion(PACKAGE_NAME, true))!;
             Assert.Greater(version.GetVersionPart(PackageVersion.VersionPart.Major), 0);
 
         }
@@ -52,7 +52,7 @@ namespace UnityVersionBump.Core.Tests.SmokeTests
             const string PACKAGE_NAME = "com.inklestudios.ink-unity-integration";
             var browser = new UPM.Browser(new HttpClient(), null, "https://package.openupm.com");
 
-            var version = (await browser.GetLatestVersion(PACKAGE_NAME))!;
+            var version = (await browser.GetLatestVersion(PACKAGE_NAME, true))!;
             Assert.Greater(version.GetVersionPart(PackageVersion.VersionPart.Major), 0);
         }
         [TestCase]
@@ -61,7 +61,7 @@ namespace UnityVersionBump.Core.Tests.SmokeTests
             const string PACKAGE_NAME = "com.inklestudios.ink-unity-integration";
             var logger = new LoggerStub();
             var browser = new UPM.Browser(new HttpClient(), logger, UPM.Models.Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT);
-            await browser.GetLatestVersion(PACKAGE_NAME);
+            await browser.GetLatestVersion(PACKAGE_NAME, true);
             Assert.IsTrue(logger.HasReceivedMessage("Unexpected return code"));
             Assert.IsTrue(logger.HasReceivedMessage("404"));
         }
@@ -71,7 +71,7 @@ namespace UnityVersionBump.Core.Tests.SmokeTests
             const string PACKAGE_NAME = "com.unity.2d.ik";
             var logger = new LoggerStub();
             var browser = new UPM.Browser(new HttpClient(), logger, "https://package.openupm.com");
-            await browser.GetLatestVersion(PACKAGE_NAME);
+            await browser.GetLatestVersion(PACKAGE_NAME, true);
             Assert.IsTrue(logger.HasReceivedMessage("Unexpected return code"));
             Assert.IsTrue(logger.HasReceivedMessage("404"));
         }

@@ -105,7 +105,24 @@ static async Task HandleUnityEditorVersionUpdate(HttpClient unityHubHttpClient, 
     }
 };
 
-static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory clientFactory, ILoggerFactory loggerFactor)
+static async Task HandlePackageVersionUpdate(IHttpClientFactory clientFactory, HttpClient gitHubHttpClient, ILoggerFactory loggerFactor, PullRequestManager.RepositoryInfo repositoryInfo, PullRequestManager.CommitInfo commitInfo, bool includePreReleasePackages)
+{
+    var newPRIDsByPackageName = await PullRequestManager.PackagePRs.GeneratePRs(
+        clientFactory,
+        loggerFactor,
+        gitHubHttpClient,
+        repositoryInfo,
+        commitInfo,
+        includePreReleasePackages
+    );
+
+    foreach (var (packageName, prID) in newPRIDsByPackageName)
+    {
+        GitHubActionsUtilities.GitHubActionsWriteLine($"Created new pull request for '{packageName}' at: https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{prID} ---");
+    }
+}
+
+static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory clientFactory, ILoggerFactory loggerFactory)
 {
     if (!inputs.TargetRepository.Contains('/'))
     {
@@ -131,19 +148,15 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
 
     var gitHubHttpClient = clientFactory.CreateClient("github").SetupGitHub(repositoryInfo, commitInfo);
 
-    var newPRIDsByPackageName = await PullRequestManager.PackagePRs.GeneratePRs(
+    
+    await HandlePackageVersionUpdate(
         clientFactory,
-        loggerFactor,
         gitHubHttpClient,
+        loggerFactory,
         repositoryInfo,
         commitInfo,
-        inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>)
+        inputs.IncludePreReleasePackages
     );
-
-    foreach (var (packageName, prID) in newPRIDsByPackageName)
-    {
-        GitHubActionsUtilities.GitHubActionsWriteLine($"Created new pull request for '{packageName}' at: https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{prID} ---");
-    }
 
     //await HandleUnityEditorVersionUpdate(
     //    clientFactory.CreateClient("unityHub"),

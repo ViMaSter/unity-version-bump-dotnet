@@ -10,6 +10,10 @@ inputs:
   releaseStreams:
     description: "(Comma-separated list of) release streams to consider when determining the latest version. (Possible values: 'Stable', 'LTS', 'Beta', 'Alpha') [example: 'Stable', 'LTS,Stable', 'Stable,Beta,Alpha']"
     required: true
+  includePreReleasePackages:
+    description: "Set this to `true`, to include pre-releases of packages"
+    required: false
+    default: 'false'
   unityProjectPath:
     description: "Path to the Unity project root, if it's not the root of the repository this action runs on [example: 'unity-project', 'projects/game1']"
     required: false
@@ -41,6 +45,8 @@ runs:
   args:
   - '-r'
   - ${{ inputs.releaseStreams }}
+  - '-i'
+  - ${{ inputs.includePreReleasePackages }}
   - '-u'
   - ${{ inputs.unityProjectPath }}
   - '-t'

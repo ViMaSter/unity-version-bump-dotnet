@@ -102,21 +102,21 @@ namespace UnityVersionBump.Core
                 public PackageVersion newVersion;
             };
 
-            public static async Task<Dictionary<string, string>> GeneratePRs(IHttpClientFactory clientFactory, ILoggerFactory loggerFactor, HttpClient gitHubHttpClient, RepositoryInfo repositoryInfo, CommitInfo commitInfo, IEnumerable<UnityVersion.ReleaseStreamType> releaseStreams)
+            public static async Task<Dictionary<string, string>> GeneratePRs(IHttpClientFactory clientFactory, ILoggerFactory loggerFactor, HttpClient gitHubHttpClient, RepositoryInfo repositoryInfo, CommitInfo commitInfo, bool includePreReleasePackages)
             {
                 var manifestJSON = await File.ReadAllTextAsync(Path.Join(Directory.GetCurrentDirectory(), repositoryInfo.RelativePathToUnityProject, "Packages", "manifest.json"));
                 var manifest = Manifest.Parse(manifestJSON);
-                var updatesNeeded = await PackagePRs.GetPackagesThatNeedUpdate(manifest, clientFactory.CreateClient("PackageRegistry"), loggerFactor.CreateLogger("PackageRegistry"));
+                var updatesNeeded = await PackagePRs.GetPackagesThatNeedUpdate(manifest, clientFactory.CreateClient("PackageRegistry"), loggerFactor.CreateLogger("PackageRegistry"), includePreReleasePackages);
                 var updatePRs = new Dictionary<string, string>();
                 foreach (var updateInfo in updatesNeeded)
                 {
-                    updatePRs.Add(updateInfo.packageName, await PackagePRs.CreatePullRequest(gitHubHttpClient, commitInfo, repositoryInfo, Manifest.Parse(Manifest.Generate(manifest)), updateInfo));
+                    updatePRs.Add(updateInfo.packageName, await CreatePullRequest(gitHubHttpClient, commitInfo, repositoryInfo, Manifest.Parse(Manifest.Generate(manifest)), updateInfo));
                 }
 
                 return updatePRs;
             }
 
-            public static async Task<IEnumerable<UpdateInfo>> GetPackagesThatNeedUpdate(Manifest manifest, HttpClient httpClient, ILogger logger)
+            public static async Task<IEnumerable<UpdateInfo>> GetPackagesThatNeedUpdate(Manifest manifest, HttpClient httpClient, ILogger logger, bool includePreReleasePackages)
             {
                 var dependenciesByRegistry = manifest.dependencies.GroupBy(dependency => manifest.GetRegistryForPackage(dependency.Key)).ToDictionary(a => a.Key, a => a.ToList());
 
@@ -127,7 +127,7 @@ namespace UnityVersionBump.Core
                     var browser = new UnityVersionBump.Core.UPM.Browser(httpClient, logger, registryURL);
                     foreach (var (packageName, currentVersion) in dependencies)
                     {
-                        var latestVersion = await browser.GetLatestVersion(packageName);
+                        var latestVersion = await browser.GetLatestVersion(packageName, includePreReleasePackages);
                         if (latestVersion > currentVersion)
                         {
                             outOfDatePackages.Add(new UpdateInfo { packageName = packageName, registryURL = registryURL, currentVersion = currentVersion, newVersion = latestVersion });

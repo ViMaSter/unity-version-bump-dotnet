@@ -1,0 +1,71 @@
+200
+[
+  {
+    "name": "main",
+    "commit": {
+      "sha": "65da463373bc23fb79fc205d6a9cdb9e9dcd725a",
+      "url": "https://api.github.com/repos/ViMaSter/unity-version-bump-test-fixture/commits/65da463373bc23fb79fc205d6a9cdb9e9dcd725a"
+    },
+    "protected": false,
+    "protection": {
+      "enabled": false,
+      "required_status_checks": {
+        "enforcement_level": "off",
+        "contexts": [],
+        "checks": []
+      }
+    },
+    "protection_url": "https://api.github.com/repos/ViMaSter/unity-version-bump-test-fixture/branches/main/protection"
+  },
+  {
+    "name": "unity-version-bump/dangling-1",
+    "commit": {
+      "sha": "65da463373bc23fb79fc205d6a9cdb9e9dcd725a",
+      "url": "https://api.github.com/repos/ViMaSter/unity-version-bump-test-fixture/commits/65da463373bc23fb79fc205d6a9cdb9e9dcd725a"
+    },
+    "protected": false,
+    "protection": {
+      "enabled": false,
+      "required_status_checks": {
+        "enforcement_level": "off",
+        "contexts": [],
+        "checks": []
+      }
+    },
+    "protection_url": "https://api.github.com/repos/ViMaSter/unity-version-bump-test-fixture/branches/unity-version-bump/dangling-1/protection"
+  },
+  {
+    "name": "unity-version-bump/dangling-2",
+    "commit": {
+      "sha": "65da463373bc23fb79fc205d6a9cdb9e9dcd725a",
+      "url": "https://api.github.com/repos/ViMaSter/unity-version-bump-test-fixture/commits/65da463373bc23fb79fc205d6a9cdb9e9dcd725a"
+    },
+    "protected": false,
+    "protection": {
+      "enabled": false,
+      "required_status_checks": {
+        "enforcement_level": "off",
+        "contexts": [],
+        "checks": []
+      }
+    },
+    "protection_url": "https://api.github.com/repos/ViMaSter/unity-version-bump-test-fixture/branches/unity-version-bump/dangling-2/protection"
+  },
+  {
+    "name": "unity-version-bump/editor/2022-2-0a17",
+    "commit": {
+      "sha": "c47d27406c76cc0a1c0fbb34fb0f0de95b420c1a",
+      "url": "https://api.github.com/repos/ViMaSter/unity-version-bump-test-fixture/commits/c47d27406c76cc0a1c0fbb34fb0f0de95b420c1a"
+    },
+    "protected": false,
+    "protection": {
+      "enabled": false,
+      "required_status_checks": {
+        "enforcement_level": "off",
+        "contexts": [],
+        "checks": []
+      }
+    },
+    "protection_url": "https://api.github.com/repos/ViMaSter/unity-version-bump-test-fixture/branches/unity-version-bump/editor/2022-2-0a17/protection"
+  }
+]
