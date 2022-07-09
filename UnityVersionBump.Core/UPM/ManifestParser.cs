@@ -7,9 +7,22 @@ namespace UnityVersionBump.Core.UPM
     {
         public class Manifest
         {
+            public const string UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT = "https://packages.unity.com";
+
             public Dictionary<string, Core.PackageVersion> dependencies { get; set; }
             public List<ScopedRegistries> scopedRegistries { get; set; }
             public List<string> testables { get; set; }
+
+            public string GetRegistryForPackage(string packageName)
+            {
+                var hasNonDefaultRegistry = scopedRegistries.FirstOrDefault(registry => registry.scopes.Contains(packageName));
+                if (hasNonDefaultRegistry == null)
+                {
+                    return UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT;
+                }
+
+                return hasNonDefaultRegistry.url;
+            }
         }
     }
     public static class ManifestParser

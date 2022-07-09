@@ -13,7 +13,6 @@ var githubInfo = new
     apiServer = Environment.GetEnvironmentVariable("GITHUB_API_URL")!
 };
 
-
 using var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(collection =>
     {
@@ -42,7 +41,6 @@ using var host = Host.CreateDefaultBuilder(args)
     })
     .Build();
 
-
 var parser = Default.ParseArguments<ActionInputs>(() => new(), args);
 parser.WithNotParsed(
     errors =>
@@ -58,11 +56,81 @@ parser.WithNotParsed(
 
 await parser.WithParsedAsync(inputs => StartAnalysisAsync(
     inputs, 
-    host.Services.GetRequiredService<IHttpClientFactory>()
+    host.Services.GetRequiredService<IHttpClientFactory>(),
+    host.Services.GetRequiredService<ILoggerFactory>()
 ));
 await host.RunAsync();
 
-static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory clientFactory)
+static async Task HandleUnityEditorVersionUpdate(HttpClient unityHubHttpClient, HttpClient gitHubHttpClient, PullRequestManager.RepositoryInfo repositoryInfo, PullRequestManager.CommitInfo commitInfo, IEnumerable<UnityVersion.ReleaseStreamType> releaseStreams)
+{
+    var projectVersionTxt = File.ReadAllText(Path.Join(Directory.GetCurrentDirectory(), repositoryInfo.RelativePathToUnityProject, "ProjectSettings", "ProjectVersion.txt"));
+    var currentVersion = ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
+    var highestVersion = await ProjectVersion.GetLatestFromHub(unityHubHttpClient, releaseStreams);
+    GitHubActionsUtilities.GitHubActionsWriteLine($"Current Unity Version: {currentVersion.ToUnityStringWithRevision()}");
+
+    // if there is no new version, exit gracefully
+    if (highestVersion == null)
+    {
+        GitHubActionsUtilities.GitHubActionsWriteLine("No newer version available on selected streams");
+        return;
+    }
+
+    var alreadyUpToDatePR = await PullRequestManager.CleanupAndCheckForAlreadyExistingPR(gitHubHttpClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+    if (alreadyUpToDatePR != null)
+    {
+        GitHubActionsUtilities.GitHubActionsWriteLine($"PR https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{alreadyUpToDatePR} is newer or identical to {highestVersion.ToUnityStringWithRevision()}");
+        return;
+    }
+
+    GitHubActionsUtilities.GitHubActionsWriteLine($"Latest Unity Version:  {highestVersion.ToUnityStringWithRevision()}");
+
+    // open new PR if project is outdated
+    var newPullRequestID = await PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        gitHubHttpClient,
+        commitInfo,
+        repositoryInfo,
+        currentVersion,
+        highestVersion
+    );
+
+    GitHubActionsUtilities.GitHubActionsWriteLine($"Created new pull request at: https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{newPullRequestID} ---");
+
+    GitHubActionsUtilities.SetOutputVariable("has-newer-version", (highestVersion.GetComparable() > currentVersion.GetComparable()).ToString());
+    GitHubActionsUtilities.SetOutputVariable("current-unity-version", currentVersion.ToUnityStringWithRevision());
+    GitHubActionsUtilities.SetOutputVariable("newest-unity-version", highestVersion.ToUnityStringWithRevision());
+    if (!string.IsNullOrEmpty(newPullRequestID))
+    {
+        GitHubActionsUtilities.SetOutputVariable("pull-request-id", newPullRequestID);
+    }
+}
+
+static async Task<object> HandlePackageVersionUpdate(IHttpClientFactory clientFactory, ILoggerFactory loggerFactor, HttpClient gitHubHttpClient, PullRequestManager.RepositoryInfo repositoryInfo, PullRequestManager.CommitInfo commitInfo, IEnumerable<UnityVersion.ReleaseStreamType> releaseStreams)
+{
+    var manifestJSON = File.ReadAllText(Path.Join(Directory.GetCurrentDirectory(), repositoryInfo.RelativePathToUnityProject, "Packages", "manifest.json"));
+    var manifest = UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestJSON);
+
+    var dependenciesByRegistry = manifest.dependencies.GroupBy(dependency => manifest.GetRegistryForPackage(dependency.Key)).ToDictionary(a=>a.Key, a=>a.ToList());
+
+    var outOfDatePackages = new List<(string packageName, string registryURL, PackageVersion currentVersion, PackageVersion newVersion)>();
+
+    foreach (var (registryURL, dependencies) in dependenciesByRegistry)
+    {
+        var browser = new UnityVersionBump.Core.UPM.Browser(clientFactory.CreateClient("PackageRegistry"), loggerFactor.CreateLogger("PackageRegistry"), registryURL);
+        foreach (var (packageName, currentVersion) in dependencies)
+        {
+            var latestVersion = await browser.GetLatestVersion(packageName);
+            if (latestVersion > currentVersion)
+            {
+                outOfDatePackages.Add((packageName, registryURL, currentVersion, latestVersion));
+            }
+        }
+    }
+
+    return outOfDatePackages;
+
+};
+
+static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory clientFactory, ILoggerFactory loggerFactor)
 {
     if (!inputs.TargetRepository.Contains('/'))
     {
@@ -86,49 +154,22 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
         PullRequestPrefix = inputs.PullRequestPrefix
     };
 
-    var httpClient = clientFactory.CreateClient("github").SetupGitHub(repositoryInfo, commitInfo);
+    var gitHubHttpClient = clientFactory.CreateClient("github").SetupGitHub(repositoryInfo, commitInfo);
 
-    var projectVersionTxt = File.ReadAllText(Path.Join(Directory.GetCurrentDirectory(), inputs.UnityProjectPath, "ProjectSettings", "ProjectVersion.txt"));
-    var currentVersion = ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
-    var highestVersion = await ProjectVersion.GetLatestFromHub(clientFactory.CreateClient("unityHub"), inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>));
-    GitHubActionsUtilities.GitHubActionsWriteLine($"Current Unity Version: {currentVersion.ToUnityStringWithRevision()}");
-
-    // if there is no new version, exit gracefully
-    if (highestVersion == null)
-    {
-        GitHubActionsUtilities.GitHubActionsWriteLine("No newer version available on selected streams");
-        Environment.Exit(0);
-        return;
-    }
-
-    var alreadyUpToDatePR = await PullRequestManager.CleanupAndCheckForAlreadyExistingPR(httpClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-    if (alreadyUpToDatePR != null)
-    {
-        GitHubActionsUtilities.GitHubActionsWriteLine($"PR https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{alreadyUpToDatePR} is newer or identical to {highestVersion.ToUnityStringWithRevision()}");
-        Environment.Exit(0);
-    }
-
-    GitHubActionsUtilities.GitHubActionsWriteLine($"Latest Unity Version:  {highestVersion.ToUnityStringWithRevision()}");
-
-    // open new PR if project is outdated
-    var newPullRequestID = await PullRequestManager.CreatePullRequestIfTargetVersionNewer(
-        httpClient,
-        commitInfo,
+    await HandlePackageVersionUpdate(
+        clientFactory,
+        loggerFactor,
+        gitHubHttpClient,
         repositoryInfo,
-        currentVersion,
-        highestVersion
+        commitInfo,
+        inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>)
     );
 
-    GitHubActionsUtilities.GitHubActionsWriteLine($"Created new pull request at: https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{newPullRequestID} ---");
-
-
-    GitHubActionsUtilities.SetOutputVariable("has-newer-version", (highestVersion.GetComparable() > currentVersion.GetComparable()).ToString());
-    GitHubActionsUtilities.SetOutputVariable("current-unity-version", currentVersion.ToUnityStringWithRevision());
-    GitHubActionsUtilities.SetOutputVariable("newest-unity-version", highestVersion.ToUnityStringWithRevision());
-    if (!string.IsNullOrEmpty(newPullRequestID))
-    {
-        GitHubActionsUtilities.SetOutputVariable("pull-request-id", newPullRequestID);
-    }
-
-    Environment.Exit(0);
+    await HandleUnityEditorVersionUpdate(
+        clientFactory.CreateClient("unityHub"),
+        gitHubHttpClient,
+        repositoryInfo,
+        commitInfo,
+        inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>)
+    );
 }

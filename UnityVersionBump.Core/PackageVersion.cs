@@ -59,6 +59,32 @@ public class PackageVersion : IComparable
 
         return GetComparable().CompareTo(castRhs.GetComparable());
     }
+
+    public static bool operator <(PackageVersion? lhs, PackageVersion? rhs)
+    {
+        if (lhs == null)
+        {
+            return true;
+        }
+        if (rhs == null)
+        {
+            return false;
+        }
+        return lhs.CompareTo(rhs) == -1;
+    }
+
+    public static bool operator >(PackageVersion? lhs, PackageVersion? rhs)
+    {
+        if (lhs == null)
+        {
+            return false;
+        }
+        if (rhs == null)
+        {
+            return true;
+        }
+        return lhs.CompareTo(rhs) == 1;
+    }
     #endregion
 
     public enum VersionPart
