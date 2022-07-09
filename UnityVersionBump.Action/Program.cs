@@ -172,4 +172,6 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
         commitInfo,
         inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>)
     );
+
+    Environment.Exit(0);
 }
