@@ -9,7 +9,7 @@ namespace UnityVersionBump.Core.UPM
         {
             public const string UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT = "https://packages.unity.com";
 
-            public Dictionary<string, Core.PackageVersion> dependencies { get; set; }
+            public Dictionary<string, PackageVersion> dependencies { get; set; }
             public List<ScopedRegistries> scopedRegistries { get; set; }
             public List<string> testables { get; set; }
 
@@ -23,17 +23,16 @@ namespace UnityVersionBump.Core.UPM
 
                 return hasNonDefaultRegistry.url;
             }
-        }
-    }
-    public static class ManifestParser
-    {
-        public static Manifest Parse(string contents)
-        {
-            return JsonConvert.DeserializeObject<Manifest>(contents);
-        }
-        public static string Generate(Manifest manifest)
-        {
-            return JsonConvert.SerializeObject(manifest);
+
+            public static Manifest Parse(string contents)
+            {
+                return JsonConvert.DeserializeObject<Manifest>(contents);
+            }
+
+            public static string Generate(Manifest manifest)
+            {
+                return JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            }
         }
     }
 

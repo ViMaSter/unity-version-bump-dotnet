@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -93,7 +94,7 @@ static async Task HandleUnityEditorVersionUpdate(HttpClient unityHubHttpClient, 
         highestVersion
     );
 
-    GitHubActionsUtilities.GitHubActionsWriteLine($"Created new pull request at: https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{newPullRequestID} ---");
+    GitHubActionsUtilities.GitHubActionsWriteLine($"Created new pull request for 'editor' at: https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{newPullRequestID} ---");
 
     GitHubActionsUtilities.SetOutputVariable("has-newer-version", (highestVersion.GetComparable() > currentVersion.GetComparable()).ToString());
     GitHubActionsUtilities.SetOutputVariable("current-unity-version", currentVersion.ToUnityStringWithRevision());
@@ -102,32 +103,6 @@ static async Task HandleUnityEditorVersionUpdate(HttpClient unityHubHttpClient, 
     {
         GitHubActionsUtilities.SetOutputVariable("pull-request-id", newPullRequestID);
     }
-}
-
-static async Task<object> HandlePackageVersionUpdate(IHttpClientFactory clientFactory, ILoggerFactory loggerFactor, HttpClient gitHubHttpClient, PullRequestManager.RepositoryInfo repositoryInfo, PullRequestManager.CommitInfo commitInfo, IEnumerable<UnityVersion.ReleaseStreamType> releaseStreams)
-{
-    var manifestJSON = File.ReadAllText(Path.Join(Directory.GetCurrentDirectory(), repositoryInfo.RelativePathToUnityProject, "Packages", "manifest.json"));
-    var manifest = UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestJSON);
-
-    var dependenciesByRegistry = manifest.dependencies.GroupBy(dependency => manifest.GetRegistryForPackage(dependency.Key)).ToDictionary(a=>a.Key, a=>a.ToList());
-
-    var outOfDatePackages = new List<(string packageName, string registryURL, PackageVersion currentVersion, PackageVersion newVersion)>();
-
-    foreach (var (registryURL, dependencies) in dependenciesByRegistry)
-    {
-        var browser = new UnityVersionBump.Core.UPM.Browser(clientFactory.CreateClient("PackageRegistry"), loggerFactor.CreateLogger("PackageRegistry"), registryURL);
-        foreach (var (packageName, currentVersion) in dependencies)
-        {
-            var latestVersion = await browser.GetLatestVersion(packageName);
-            if (latestVersion > currentVersion)
-            {
-                outOfDatePackages.Add((packageName, registryURL, currentVersion, latestVersion));
-            }
-        }
-    }
-
-    return outOfDatePackages;
-
 };
 
 static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory clientFactory, ILoggerFactory loggerFactor)
@@ -156,7 +131,7 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
 
     var gitHubHttpClient = clientFactory.CreateClient("github").SetupGitHub(repositoryInfo, commitInfo);
 
-    await HandlePackageVersionUpdate(
+    var newPRIDsByPackageName = await PullRequestManager.PackagePRs.GeneratePRs(
         clientFactory,
         loggerFactor,
         gitHubHttpClient,
@@ -165,13 +140,18 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
         inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>)
     );
 
-    await HandleUnityEditorVersionUpdate(
-        clientFactory.CreateClient("unityHub"),
-        gitHubHttpClient,
-        repositoryInfo,
-        commitInfo,
-        inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>)
-    );
+    foreach (var (packageName, prID) in newPRIDsByPackageName)
+    {
+        GitHubActionsUtilities.GitHubActionsWriteLine($"Created new pull request for '{packageName}' at: https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{prID} ---");
+    }
+
+    //await HandleUnityEditorVersionUpdate(
+    //    clientFactory.CreateClient("unityHub"),
+    //    gitHubHttpClient,
+    //    repositoryInfo,
+    //    commitInfo,
+    //    inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>)
+    //);
 
     Environment.Exit(0);
 }

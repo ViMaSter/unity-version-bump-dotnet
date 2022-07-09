@@ -68,7 +68,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
             var manifestContentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.UPM.Resources.GG-JointJustice-manifest.json");
             using var streamReader = new StreamReader(manifestContentStream);
             var manifestContent = streamReader.ReadToEnd();
-            var actualOutput = UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent).dependencies;
+            var actualOutput = Manifest.Parse(manifestContent).dependencies;
             Assert.AreEqual(versionByPackage, actualOutput);
         }
 
@@ -77,8 +77,8 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
         {
             var manifestContentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.UPM.Resources.GG-JointJustice-manifest.json");
             using var streamReader = new StreamReader(manifestContentStream);
-            var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()));
-            var actualOutput = UnityVersionBump.Core.UPM.ManifestParser.Generate(new Manifest()
+            var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()), Formatting.Indented);
+            var actualOutput = Manifest.Generate(new Manifest()
             {
                 dependencies = versionByPackage,
                 scopedRegistries = new List<ScopedRegistries>()
@@ -100,14 +100,14 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
         {
             var manifestContentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.UPM.Resources.GG-JointJustice-manifest.json");
             using var streamReader = new StreamReader(manifestContentStream);
-            var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()))!;
-            Assert.AreEqual(manifestContent, UnityVersionBump.Core.UPM.ManifestParser.Generate(UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent)));
+            var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()), Formatting.Indented);
+            Assert.AreEqual(manifestContent, Manifest.Generate(Manifest.Parse(manifestContent)));
         }
 
         [TestCase]
         public void IsDeterministicStartingFromDependenciesObject()
         {
-            Assert.AreEqual(versionByPackage, UnityVersionBump.Core.UPM.ManifestParser.Parse(UnityVersionBump.Core.UPM.ManifestParser.Generate(new Manifest() { dependencies = versionByPackage })).dependencies);
+            Assert.AreEqual(versionByPackage, Manifest.Parse(Manifest.Generate(new Manifest() { dependencies = versionByPackage })).dependencies);
         }
 
         [TestCase]
@@ -116,7 +116,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
             var manifestContentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.UPM.Resources.GG-JointJustice-manifest.json");
             using var streamReader = new StreamReader(manifestContentStream);
             var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()))!;
-            var manifest = UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent);
+            var manifest = Manifest.Parse(manifestContent);
 
             Assert.AreEqual(Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT, manifest.GetRegistryForPackage("com.unity.2d.tilemap"));
             Assert.AreEqual("https://package.openupm.com", manifest.GetRegistryForPackage("com.inklestudios.ink-unity-integration"));

@@ -1,10 +1,12 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using UnityVersionBump.Core.GitHubActionsData;
 using UnityVersionBump.Core.GitHubActionsData.Models.Branches;
 using UnityVersionBump.Core.GitHubActionsData.Models.PullRequests;
+using UnityVersionBump.Core.UPM.Models;
 
 namespace UnityVersionBump.Core
 {
@@ -90,6 +92,79 @@ namespace UnityVersionBump.Core
             }
         }
 
+        public static class PackagePRs
+        {
+            public record UpdateInfo
+            {
+                public string packageName;
+                public string registryURL;
+                public PackageVersion currentVersion;
+                public PackageVersion newVersion;
+            };
+
+            public static async Task<Dictionary<string, string>> GeneratePRs(IHttpClientFactory clientFactory, ILoggerFactory loggerFactor, HttpClient gitHubHttpClient, RepositoryInfo repositoryInfo, CommitInfo commitInfo, IEnumerable<UnityVersion.ReleaseStreamType> releaseStreams)
+            {
+                var manifestJSON = await File.ReadAllTextAsync(Path.Join(Directory.GetCurrentDirectory(), repositoryInfo.RelativePathToUnityProject, "Packages", "manifest.json"));
+                var manifest = Manifest.Parse(manifestJSON);
+                var updatesNeeded = await PackagePRs.GetPackagesThatNeedUpdate(manifest, clientFactory.CreateClient("PackageRegistry"), loggerFactor.CreateLogger("PackageRegistry"));
+                var updatePRs = new Dictionary<string, string>();
+                foreach (var updateInfo in updatesNeeded)
+                {
+                    updatePRs.Add(updateInfo.packageName, await PackagePRs.CreatePullRequest(gitHubHttpClient, commitInfo, repositoryInfo, Manifest.Parse(Manifest.Generate(manifest)), updateInfo));
+                }
+
+                return updatePRs;
+            }
+
+            public static async Task<IEnumerable<UpdateInfo>> GetPackagesThatNeedUpdate(Manifest manifest, HttpClient httpClient, ILogger logger)
+            {
+                var dependenciesByRegistry = manifest.dependencies.GroupBy(dependency => manifest.GetRegistryForPackage(dependency.Key)).ToDictionary(a => a.Key, a => a.ToList());
+
+                var outOfDatePackages = new List<UpdateInfo>();
+
+                foreach (var (registryURL, dependencies) in dependenciesByRegistry)
+                {
+                    var browser = new UnityVersionBump.Core.UPM.Browser(httpClient, logger, registryURL);
+                    foreach (var (packageName, currentVersion) in dependencies)
+                    {
+                        var latestVersion = await browser.GetLatestVersion(packageName);
+                        if (latestVersion > currentVersion)
+                        {
+                            outOfDatePackages.Add(new UpdateInfo { packageName = packageName, registryURL = registryURL, currentVersion = currentVersion, newVersion = latestVersion });
+                        }
+                    }
+                }
+
+                return outOfDatePackages;
+            }
+
+            public static async Task<string> CreatePullRequest(HttpClient httpClient, CommitInfo commitInfo, RepositoryInfo repositoryInfo, Manifest manifest, PackagePRs.UpdateInfo updateInfo)
+            {
+                manifest.dependencies[updateInfo.packageName] = updateInfo.newVersion;
+                
+                var baseBranch = await GitHubAPI.GetDefaultBranchName(httpClient, repositoryInfo);
+                var shaHashOfLastCommitOnBaseBranch = await GitHubAPI.GetLastCommitSHAHash(httpClient, baseBranch);
+
+                var newManifestContent = Manifest.Generate(manifest);
+                var shaHashOfNewProjectVersionTXT = await GitHubAPI.CreateBlobForContent(httpClient, newManifestContent);
+                var shaHasOfTreeForNewFileProjectVersionTXT = await GitHubAPI.CreateTree(httpClient, "Packages/manifest.json", shaHashOfLastCommitOnBaseBranch, repositoryInfo.RelativePathToUnityProject, shaHashOfNewProjectVersionTXT);
+
+                var commitMessage = $"build(deps): bump `{updateInfo.packageName}` from `{updateInfo.currentVersion}` to `{updateInfo.newVersion}`";
+                var shaHasOfCommitOfTree = await GitHubAPI.CreateCommit(httpClient, commitMessage, shaHasOfTreeForNewFileProjectVersionTXT, shaHashOfLastCommitOnBaseBranch, commitInfo);
+
+                var targetBranchName = $"{commitInfo.PullRequestPrefix}/{updateInfo.packageName}/{updateInfo.newVersion}";
+                await GitHubAPI.CreateBranch(httpClient, targetBranchName, shaHasOfCommitOfTree);
+
+                var body = TextFormatting.GenerateBody(updateInfo);
+
+                var pullRequest = await GitHubAPI.CreatePullRequest(httpClient, baseBranch, targetBranchName, commitMessage, body);
+
+                await GitHubAPI.ApplyLabels(httpClient, pullRequest, commitInfo.PullRequestLabels);
+
+                return pullRequest.ToString("D1");
+            }
+        }
+
         private static class GitHubAPI
         {
             public static async Task<string> GetDefaultBranchName(HttpClient httpClient, RepositoryInfo repositoryInfo)
@@ -108,10 +183,8 @@ namespace UnityVersionBump.Core
                 return JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())!["sha"];
             }
 
-            public static async Task<string> CreateTree(HttpClient httpClient, string parentCommitSHAHash, string prefixToProjectSettingsTXT, string shaHashOfNewProjectVersionTXT)
+            public static async Task<string> CreateTree(HttpClient httpClient, string fileName, string parentCommitSHAHash, string prefixToProjectSettingsTXT, string shaHashOfNewProjectVersionTXT)
             {
-                const string PROJECT_VERSION_TXT_PATH = "ProjectSettings/ProjectVersion.txt";
-
                 var body = new
                 {
                     base_tree = parentCommitSHAHash,
@@ -119,7 +192,7 @@ namespace UnityVersionBump.Core
                     {
                         mode = "100644",
                         type = "blob",
-                        path = $"{(string.IsNullOrEmpty(prefixToProjectSettingsTXT) ? "" : prefixToProjectSettingsTXT + "/")}{PROJECT_VERSION_TXT_PATH}",
+                        path = $"{(string.IsNullOrEmpty(prefixToProjectSettingsTXT) ? "" : prefixToProjectSettingsTXT + "/")}{fileName}",
                         sha = shaHashOfNewProjectVersionTXT
                     }
                 }
@@ -256,6 +329,20 @@ namespace UnityVersionBump.Core
                 return $"Bumps the [Unity Editor](https://unity3d.com/get-unity/download) version from `{currentVersion.ToUnityStringWithRevision()}` to `{targetVersion.ToUnityStringWithRevision()}`.\r\n\r\n{GenerateReleaseNotesLink(targetVersion)}\r\n\r\n<!--uvb {GenerateJSONInfo(targetVersion)} -->";
             }
 
+            internal static string GenerateBody(PackagePRs.UpdateInfo updateInfo)
+            {
+                return $"Bumps the version of `{updateInfo.packageName}` version from `{updateInfo.currentVersion}` to `{updateInfo.newVersion}`.<!--uvb {GenerateJSONInfo(updateInfo)} -->";
+            }
+
+            private static string GenerateJSONInfo(PackagePRs.UpdateInfo updateInfo)
+            {
+                return JsonConvert.SerializeObject(new PullRequestInfo(new PullRequestInfoData()
+                {
+                    package = updateInfo.packageName,
+                    version = updateInfo.newVersion.ToString()
+                }));
+            }
+
             private static string GenerateJSONInfo(UnityVersion targetVersion)
             {
                 return JsonConvert.SerializeObject(new PullRequestInfo(new PullRequestInfoData(){
@@ -343,9 +430,9 @@ namespace UnityVersionBump.Core
 
             var newProjectVersionTXTContent = ProjectVersion.GenerateProjectVersionTXTContent(targetVersion);
             var shaHashOfNewProjectVersionTXT = await GitHubAPI.CreateBlobForContent(httpClient, newProjectVersionTXTContent);
-            var shaHasOfTreeForNewFileProjectVersionTXT = await GitHubAPI.CreateTree(httpClient, shaHashOfLastCommitOnBaseBranch, repositoryInfo.RelativePathToUnityProject, shaHashOfNewProjectVersionTXT);
+            var shaHasOfTreeForNewFileProjectVersionTXT = await GitHubAPI.CreateTree(httpClient, "ProjectSettings/ProjectVersion.txt", shaHashOfLastCommitOnBaseBranch, repositoryInfo.RelativePathToUnityProject, shaHashOfNewProjectVersionTXT);
 
-            var commitMessage = $"build(deps): bump UnityEditor from `{currentVersion.ToUnityString()}` to `{targetVersion.ToUnityString()}`";
+            var commitMessage = $"build(deps): bump `UnityEditor` from `{currentVersion.ToUnityString()}` to `{targetVersion.ToUnityString()}`";
             var shaHasOfCommitOfTree = await GitHubAPI.CreateCommit(httpClient, commitMessage, shaHasOfTreeForNewFileProjectVersionTXT, shaHashOfLastCommitOnBaseBranch, commitInfo);
 
             var targetBranchName = $"{commitInfo.PullRequestPrefix}/editor/{targetVersion.ToUnityString().Replace(".", "-")}";
