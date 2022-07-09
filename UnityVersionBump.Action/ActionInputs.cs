@@ -62,11 +62,12 @@ namespace UnityVersionBump.Action
         [Option('i', "includePreReleasePackages",
             Required = false,
             HelpText = "Set this to `true`, to include pre-releases of packages")]
-        public bool IncludePreReleasePackages
+        public string IncludePreReleasePackages
         {
             get;
             set;
-        } = false;
+        } = "false";
+        public bool includePreReleasePackages => bool.Parse(IncludePreReleasePackages);
 
         public string[] pullRequestLabels = null!;
 

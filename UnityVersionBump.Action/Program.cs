@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -56,11 +55,14 @@ parser.WithNotParsed(
         Environment.Exit(2);
     });
 
-await parser.WithParsedAsync(inputs => StartAnalysisAsync(
-    inputs, 
-    host.Services.GetRequiredService<IHttpClientFactory>(),
-    host.Services.GetRequiredService<ILoggerFactory>()
-));
+await parser.WithParsedAsync(inputs =>
+{
+    return StartAnalysisAsync(
+        inputs,
+        host.Services.GetRequiredService<IHttpClientFactory>(),
+        host.Services.GetRequiredService<ILoggerFactory>()
+    );
+});
 await host.RunAsync();
 
 static async Task HandleUnityEditorVersionUpdate(HttpClient unityHubHttpClient, HttpClient gitHubHttpClient, PullRequestManager.RepositoryInfo repositoryInfo, PullRequestManager.CommitInfo commitInfo, IEnumerable<UnityVersion.ReleaseStreamType> releaseStreams)
@@ -173,7 +175,7 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
         loggerFactory,
         repositoryInfo,
         commitInfo,
-        inputs.IncludePreReleasePackages
+        inputs.includePreReleasePackages
     );
 
     await HandleUnityEditorVersionUpdate(
