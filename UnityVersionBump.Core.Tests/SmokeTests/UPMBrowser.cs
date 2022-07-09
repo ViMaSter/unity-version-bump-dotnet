@@ -1,60 +1,77 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 
 namespace UnityVersionBump.Core.Tests.SmokeTests
 {
     class UPMBrowser
     {
+        private class LoggerStub : ILogger
+        {
+            private readonly List<string> _loggedMessages = new (1);
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+            {
+                _loggedMessages.Add(formatter.Invoke(state, exception));
+            }
+
+            public bool HasReceivedMessage(string content)
+            {
+                return _loggedMessages.Any(message => message.Contains(content));
+            }
+
+            public bool IsEnabled(LogLevel logLevel)
+            {
+                return true;
+            }
+
+            public IDisposable BeginScope<TState>(TState state)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         [TestCase]
-        public void CanGetVersionFromOfficialPackageRepository()
+        public async Task CanGetVersionFromOfficialPackageRepository()
         {
             const string PACKAGE_NAME = "com.unity.2d.ik";
             var browser = new UPM.Browser(new HttpClient(), null, UPM.Models.Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT);
 
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                var version = (await browser.GetLatestVersion(PACKAGE_NAME))!;
-                Assert.Greater(version.GetVersionPart(PackageVersion.VersionPart.Major), 0);
-            });
+            var version = (await browser.GetLatestVersion(PACKAGE_NAME))!;
+            Assert.Greater(version.GetVersionPart(PackageVersion.VersionPart.Major), 0);
 
         }
         [TestCase]
-        public void CanGetVersionFromOpenUPM()
+        public async Task CanGetVersionFromOpenUPM()
         {
             const string PACKAGE_NAME = "com.inklestudios.ink-unity-integration";
             var browser = new UPM.Browser(new HttpClient(), null, "https://package.openupm.com");
 
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                var version = (await browser.GetLatestVersion(PACKAGE_NAME))!;
-                Assert.Greater(version.GetVersionPart(PackageVersion.VersionPart.Major), 0);
-            });
+            var version = (await browser.GetLatestVersion(PACKAGE_NAME))!;
+            Assert.Greater(version.GetVersionPart(PackageVersion.VersionPart.Major), 0);
         }
         [TestCase]
-        public void ThrowsOn404FromOfficialPackageRepository()
+        public async Task ThrowsOn404FromOfficialPackageRepository()
         {
             const string PACKAGE_NAME = "com.inklestudios.ink-unity-integration";
-            var browser = new UPM.Browser(new HttpClient(), null, UPM.Models.Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT);
-
-            var exception = Assert.ThrowsAsync<NotSupportedException>(async () =>
-            {
-                await browser.GetLatestVersion(PACKAGE_NAME);
-            })!;
-            StringAssert.Contains("Unexpected return code 404", exception.Message);
-
+            var logger = new LoggerStub();
+            var browser = new UPM.Browser(new HttpClient(), logger, UPM.Models.Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT);
+            await browser.GetLatestVersion(PACKAGE_NAME);
+            Assert.IsTrue(logger.HasReceivedMessage("Unexpected return code"));
+            Assert.IsTrue(logger.HasReceivedMessage("404"));
         }
         [TestCase]
-        public void ThrowsOn404FromOpenUPM()
+        public async Task ThrowsOn404FromOpenUPM()
         {
             const string PACKAGE_NAME = "com.unity.2d.ik";
-            var browser = new UPM.Browser(new HttpClient(), null, "https://package.openupm.com");
-
-            var exception = Assert.ThrowsAsync<NotSupportedException>(async () =>
-            {
-                await browser.GetLatestVersion(PACKAGE_NAME);
-            })!;
-            StringAssert.Contains("Unexpected return code 404", exception.Message);
+            var logger = new LoggerStub();
+            var browser = new UPM.Browser(new HttpClient(), logger, "https://package.openupm.com");
+            await browser.GetLatestVersion(PACKAGE_NAME);
+            Assert.IsTrue(logger.HasReceivedMessage("Unexpected return code"));
+            Assert.IsTrue(logger.HasReceivedMessage("404"));
         }
     }
 }
