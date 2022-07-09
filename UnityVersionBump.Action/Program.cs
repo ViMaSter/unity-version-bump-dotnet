@@ -7,6 +7,7 @@ using Polly;
 using Polly.Extensions.Http;
 using UnityVersionBump.Action;
 using UnityVersionBump.Core;
+using UnityVersionBump.Core.UPM.Models;
 using static CommandLine.Parser;
 
 var githubInfo = new
@@ -67,7 +68,6 @@ static async Task HandleUnityEditorVersionUpdate(HttpClient unityHubHttpClient, 
     var projectVersionTxt = File.ReadAllText(Path.Join(Directory.GetCurrentDirectory(), repositoryInfo.RelativePathToUnityProject, "ProjectSettings", "ProjectVersion.txt"));
     var currentVersion = ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
     var highestVersion = await ProjectVersion.GetLatestFromHub(unityHubHttpClient, releaseStreams);
-    GitHubActionsUtilities.GitHubActionsWriteLine($"Current Unity Version: {currentVersion.ToUnityStringWithRevision()}");
 
     // if there is no new version, exit gracefully
     if (highestVersion == null)
@@ -107,18 +107,37 @@ static async Task HandleUnityEditorVersionUpdate(HttpClient unityHubHttpClient, 
 
 static async Task HandlePackageVersionUpdate(IHttpClientFactory clientFactory, HttpClient gitHubHttpClient, ILoggerFactory loggerFactor, PullRequestManager.RepositoryInfo repositoryInfo, PullRequestManager.CommitInfo commitInfo, bool includePreReleasePackages)
 {
-    var newPRIDsByPackageName = await PullRequestManager.PackagePRs.GeneratePRs(
+    var manifestJSON = await File.ReadAllTextAsync(Path.Join(Directory.GetCurrentDirectory(), repositoryInfo.RelativePathToUnityProject, "Packages", "manifest.json"));
+    var manifest = Manifest.Parse(manifestJSON);
+
+    var newPRIDsByPackageName = await PullRequestManager.PackagePRs.GenerateListOfPackageUpdates(
         clientFactory,
         loggerFactor,
         gitHubHttpClient,
         repositoryInfo,
         commitInfo,
+        manifest,
         includePreReleasePackages
     );
 
-    foreach (var (packageName, prID) in newPRIDsByPackageName)
+    foreach (var (packageName, updateInfo) in newPRIDsByPackageName)
     {
-        GitHubActionsUtilities.GitHubActionsWriteLine($"Created new pull request for '{packageName}' at: https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{prID} ---");
+        var existingPR = await PullRequestManager.PackagePRs.CleanupAndCheckForAlreadyExistingPR(
+            gitHubHttpClient,
+            commitInfo,
+            repositoryInfo,
+            updateInfo
+        );
+
+        if (existingPR != null)
+        {
+            GitHubActionsUtilities.GitHubActionsWriteLine($"Existing pull request for '{packageName}' is equal or bigger than '{updateInfo.newVersion}': https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{existingPR} ---");
+            continue;
+        }
+
+        var prID = await PullRequestManager.PackagePRs.CreatePullRequest(gitHubHttpClient, commitInfo, repositoryInfo, Manifest.Parse(Manifest.Generate(manifest)), updateInfo);
+
+        GitHubActionsUtilities.GitHubActionsWriteLine($"Created new pull request for '{packageName}': https://github.com/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/pull/{prID} ---");
     }
 }
 
@@ -148,7 +167,6 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
 
     var gitHubHttpClient = clientFactory.CreateClient("github").SetupGitHub(repositoryInfo, commitInfo);
 
-    
     await HandlePackageVersionUpdate(
         clientFactory,
         gitHubHttpClient,

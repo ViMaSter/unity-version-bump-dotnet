@@ -60,6 +60,17 @@ public class PackageVersion : IComparable
         return GetComparable().CompareTo(castRhs.GetComparable());
     }
 
+    public long GetComparable()
+    {
+        var suffixNumber = 0;
+        if (_currentValues.ContainsKey(VersionPart.SuffixNumber))
+        {
+            suffixNumber = _currentValues[VersionPart.SuffixNumber];
+        }
+        return long.Parse($"{_currentValues[VersionPart.Major]:D4}{_currentValues[VersionPart.Minor]:D2}{_currentValues[VersionPart.Patch]:D2}{suffixNumber:D3}");
+    }
+
+
     public static bool operator <(PackageVersion? lhs, PackageVersion? rhs)
     {
         if (lhs == null)
@@ -144,16 +155,6 @@ public class PackageVersion : IComparable
     public int GetVersionPart(VersionPart versionPart)
     {
         return _currentValues[versionPart];
-    }
-
-    public long GetComparable()
-    {
-        var suffixNumber = 0;
-        if (_currentValues.ContainsKey(VersionPart.SuffixNumber))
-        {
-            suffixNumber = _currentValues[VersionPart.SuffixNumber];
-        }
-        return long.Parse($"{_currentValues[VersionPart.Major]:D4}{_currentValues[VersionPart.Minor]:D2}{_currentValues[VersionPart.Patch]:D2}{suffixNumber:D3}");
     }
     
     /// <summary>

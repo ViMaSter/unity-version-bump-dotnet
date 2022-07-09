@@ -3,9 +3,9 @@ using UnityVersionBump.Core.Exceptions;
 
 namespace UnityVersionBump.Core;
 
+
 public class UnityVersion : IComparable
 {
-
     #region IComparable
     public override bool Equals(object? rhs)
     {
@@ -35,6 +35,37 @@ public class UnityVersion : IComparable
         }
 
         return GetComparable().CompareTo(castRhs.GetComparable());
+    }
+
+    public long GetComparable()
+    {
+        return long.Parse($"{_currentValues[VersionPart.Major]:D4}{_currentValues[VersionPart.Minor]:D2}{_currentValues[VersionPart.Patch]:D2}{_currentValues[VersionPart.ReleaseStream]}{_currentValues[VersionPart.Build]:D3}");
+    }
+
+    public static bool operator <(UnityVersion? lhs, UnityVersion? rhs)
+    {
+        if (lhs == null)
+        {
+            return true;
+        }
+        if (rhs == null)
+        {
+            return false;
+        }
+        return lhs.CompareTo(rhs) == -1;
+    }
+
+    public static bool operator >(UnityVersion? lhs, UnityVersion? rhs)
+    {
+        if (lhs == null)
+        {
+            return false;
+        }
+        if (rhs == null)
+        {
+            return true;
+        }
+        return lhs.CompareTo(rhs) == 1;
     }
     #endregion
 
@@ -134,11 +165,6 @@ public class UnityVersion : IComparable
             throw new ArgumentException($"Use '{nameof(UnityVersion)}.{nameof(ReleaseStream)}()' to get type-safe information about the release stream of this release");
         }
         return _currentValues[versionPart];
-    }
-
-    public long GetComparable()
-    {
-        return long.Parse($"{_currentValues[VersionPart.Major]:D4}{_currentValues[VersionPart.Minor]:D2}{_currentValues[VersionPart.Patch]:D2}{_currentValues[VersionPart.ReleaseStream]}{_currentValues[VersionPart.Build]:D3}");
     }
 
     #region ToString()

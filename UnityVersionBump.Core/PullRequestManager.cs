@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using UnityVersionBump.Core.GitHubActionsData;
 using UnityVersionBump.Core.GitHubActionsData.Models.Branches;
 using UnityVersionBump.Core.GitHubActionsData.Models.PullRequests;
+using UnityVersionBump.Core.UPM;
 using UnityVersionBump.Core.UPM.Models;
 
 namespace UnityVersionBump.Core
@@ -18,6 +19,41 @@ namespace UnityVersionBump.Core
             client.DefaultRequestHeaders.UserAgent.Add(new("UnityVersionBump", "1.0.0"));
             client.BaseAddress = new($"https://api.github.com/repos/{repositoryInfo.UserName}/{repositoryInfo.RepositoryName}/");
             return client;
+        }
+    }
+
+    public static class PRHelper
+    {
+        public static IList<(PullRequest pullRequest, IComparable version)> GetActivePackagePRs(this IEnumerable<(PullRequest pullRequest, PullRequestInfo pullRequestContent)> activePRs, string packageName)
+        {
+            var relevantPR = activePRs
+                .Where(pr => IsOfPackage(pr, packageName));
+            
+            if (packageName == PullRequestManager.EditorPRs.EDITOR_PACKAGE)
+            {
+                return relevantPR
+                    .Select(ConvertToPRNumberAndUnityVersion)
+                    .ToList();
+            }
+
+            return relevantPR
+                .Select(ConvertToPRNumberAndPackageVersion)
+                .ToList();
+        }
+
+        private static (PullRequest pullRequest, IComparable version) ConvertToPRNumberAndPackageVersion((PullRequest pullRequest, PullRequestInfo pullRequestContent) package)
+        {
+            return (package.pullRequest, new PackageVersion(package.pullRequestContent.data.version));
+        }
+
+        private static (PullRequest pullRequest, IComparable version) ConvertToPRNumberAndUnityVersion((PullRequest pullRequest, PullRequestInfo pullRequestContent) package)
+        {
+            return (package.pullRequest, ProjectVersion.FromProjectVersionTXTSyntax(package.pullRequestContent.data.version));
+        }
+
+        private static bool IsOfPackage((PullRequest pullRequest, PullRequestInfo pullRequestContent) package, string packageName)
+        {
+            return package.pullRequestContent.data.package == packageName;
         }
     }
     public static class PullRequestManager
@@ -43,7 +79,7 @@ namespace UnityVersionBump.Core
             public const string EDITOR_PACKAGE = "editor";
             private static readonly Regex ContentFilter = new("<!--uvb(.*)-->");
 
-            public static async Task<IList<(PullRequest pullRequest, UnityVersion version)>> GetActivePRs(HttpClient httpClient)
+            public static async Task<IEnumerable<(PullRequest pullRequest, PullRequestInfo pullRequestContent)>> GetActivePRs(HttpClient httpClient)
             {
                 var pullRequests = new List<PullRequest>();
                 var nextPage = 1;
@@ -64,20 +100,7 @@ namespace UnityVersionBump.Core
 
                 return pullRequests
                     .Where(PullRequestHasInfo)
-                    .Select(ParsePullRequestInfo)
-                    .Where(IsEditorPackage)
-                    .Select(ConvertToPRNumberAndUnityVersion)
-                    .ToList();
-            }
-
-            private static (PullRequest pullRequest, UnityVersion) ConvertToPRNumberAndUnityVersion((PullRequest pullRequest, PullRequestInfo pullRequestContent) package)
-            {
-                return (package.pullRequest, ProjectVersion.FromProjectVersionTXTSyntax(package.pullRequestContent.data.version));
-            }
-
-            private static bool IsEditorPackage((PullRequest pullRequest, PullRequestInfo pullRequestContent) package)
-            {
-                return package.pullRequestContent.data.package == EDITOR_PACKAGE;
+                    .Select(ParsePullRequestInfo);
             }
 
             private static (PullRequest pullRequest, PullRequestInfo pullRequestContent) ParsePullRequestInfo(PullRequest pullRequest)
@@ -102,15 +125,33 @@ namespace UnityVersionBump.Core
                 public PackageVersion newVersion;
             };
 
-            public static async Task<Dictionary<string, string>> GeneratePRs(IHttpClientFactory clientFactory, ILoggerFactory loggerFactor, HttpClient gitHubHttpClient, RepositoryInfo repositoryInfo, CommitInfo commitInfo, bool includePreReleasePackages)
+            public static async Task<int?> CleanupAndCheckForAlreadyExistingPR(HttpClient httpClient, CommitInfo commitInfo, RepositoryInfo repositoryInfo, PackagePRs.UpdateInfo updateInfo)
             {
-                var manifestJSON = await File.ReadAllTextAsync(Path.Join(Directory.GetCurrentDirectory(), repositoryInfo.RelativePathToUnityProject, "Packages", "manifest.json"));
-                var manifest = Manifest.Parse(manifestJSON);
+                var latestPR = await CloseAllButLatestPR(httpClient, commitInfo, updateInfo.packageName);
+
+                if (latestPR != null)
+                {
+                    // if there is a PR matching (or newer than) the target version
+                    if (latestPR.Value.version.CompareTo(updateInfo.newVersion) >= 0)
+                    {
+                        // return that PR number
+                        return latestPR.Value.number;
+                    }
+
+                    // if there is a new version available and the existing PR is older, close it
+                    await GitHubAPI.ClosePullRequest(httpClient, latestPR.Value.number);
+                }
+
+                return null;
+            }
+
+            public static async Task<Dictionary<string, UpdateInfo>> GenerateListOfPackageUpdates(IHttpClientFactory clientFactory, ILoggerFactory loggerFactor, HttpClient gitHubHttpClient, RepositoryInfo repositoryInfo, CommitInfo commitInfo, Manifest manifest, bool includePreReleasePackages)
+            {
                 var updatesNeeded = await PackagePRs.GetPackagesThatNeedUpdate(manifest, clientFactory.CreateClient("PackageRegistry"), loggerFactor.CreateLogger("PackageRegistry"), includePreReleasePackages);
-                var updatePRs = new Dictionary<string, string>();
+                var updatePRs = new Dictionary<string, UpdateInfo>();
                 foreach (var updateInfo in updatesNeeded)
                 {
-                    updatePRs.Add(updateInfo.packageName, await CreatePullRequest(gitHubHttpClient, commitInfo, repositoryInfo, Manifest.Parse(Manifest.Generate(manifest)), updateInfo));
+                    updatePRs.Add(updateInfo.packageName, updateInfo);
                 }
 
                 return updatePRs;
@@ -124,7 +165,7 @@ namespace UnityVersionBump.Core
 
                 foreach (var (registryURL, dependencies) in dependenciesByRegistry)
                 {
-                    var browser = new UnityVersionBump.Core.UPM.Browser(httpClient, logger, registryURL);
+                    var browser = new Browser(httpClient, logger, registryURL);
                     foreach (var (packageName, currentVersion) in dependencies)
                     {
                         var latestVersion = await browser.GetLatestVersion(packageName, includePreReleasePackages);
@@ -365,7 +406,7 @@ namespace UnityVersionBump.Core
 
         public static async Task<int?> CleanupAndCheckForAlreadyExistingPR(HttpClient httpClient, CommitInfo commitInfo, RepositoryInfo repositoryInfo, UnityVersion currentVersion, UnityVersion? targetVersion)
         {
-            var latestPR = await CloseAllButLatestPR(httpClient, commitInfo);
+            var latestPR = await CloseAllButLatestPR(httpClient, commitInfo, EditorPRs.EDITOR_PACKAGE);
 
             // if there's no new version, the update is done
             if (targetVersion == null)
@@ -389,11 +430,11 @@ namespace UnityVersionBump.Core
             return null;
         }
 
-        private static async Task<(int number, UnityVersion version)?> CloseAllButLatestPR(HttpClient httpClient, CommitInfo commitInfo)
+        private static async Task<(int number, IComparable version)?> CloseAllButLatestPR(HttpClient httpClient, CommitInfo commitInfo, string packageName)
         {
-            var currentEditorPullRequests = await EditorPRs.GetActivePRs(httpClient);
+            var currentEditorPullRequests = (await EditorPRs.GetActivePRs(httpClient)).GetActivePackagePRs(packageName);
             var branchesOfPRs = currentEditorPullRequests.Select(entry => entry.pullRequest.head.label.Split(":")[1]);
-            var danglingBranches = (await GitHubAPI.GetAllBranches(httpClient)).Where(branch => branch.StartsWith($"{commitInfo.PullRequestPrefix}/{EditorPRs.EDITOR_PACKAGE}")).Where(branch => !branchesOfPRs.Contains(branch));
+            var danglingBranches = (await GitHubAPI.GetAllBranches(httpClient)).Where(branch => branch.StartsWith($"{commitInfo.PullRequestPrefix}/{packageName}")).Where(branch => !branchesOfPRs.Contains(branch));
             foreach (var danglingBranch in danglingBranches)
             {
                 await GitHubAPI.DeleteBranch(httpClient, danglingBranch);
@@ -407,7 +448,7 @@ namespace UnityVersionBump.Core
             if (latestVersionByPR != default)
             {
                 // close all that are older than the latest
-                var outdatedPRs = sortedFromOldestToNewestVersion.Where(tuple => tuple.number!= latestVersionByPR.number);
+                var outdatedPRs = sortedFromOldestToNewestVersion.Where(tuple => tuple.number != latestVersionByPR.number);
                 foreach (var (prNumber, _) in outdatedPRs)
                 {
                     await GitHubAPI.ClosePullRequest(httpClient, prNumber);
@@ -432,7 +473,7 @@ namespace UnityVersionBump.Core
             var shaHashOfNewProjectVersionTXT = await GitHubAPI.CreateBlobForContent(httpClient, newProjectVersionTXTContent);
             var shaHasOfTreeForNewFileProjectVersionTXT = await GitHubAPI.CreateTree(httpClient, "ProjectSettings/ProjectVersion.txt", shaHashOfLastCommitOnBaseBranch, repositoryInfo.RelativePathToUnityProject, shaHashOfNewProjectVersionTXT);
 
-            var commitMessage = $"build(deps): bump `UnityEditor` from `{currentVersion.ToUnityString()}` to `{targetVersion.ToUnityString()}`";
+            var commitMessage = $"build(deps): bump Unity Editor from `{currentVersion.ToUnityString()}` to `{targetVersion.ToUnityString()}`";
             var shaHasOfCommitOfTree = await GitHubAPI.CreateCommit(httpClient, commitMessage, shaHasOfTreeForNewFileProjectVersionTXT, shaHashOfLastCommitOnBaseBranch, commitInfo);
 
             var targetBranchName = $"{commitInfo.PullRequestPrefix}/{EditorPRs.EDITOR_PACKAGE}/{targetVersion.ToUnityString().Replace(".", "-")}";
