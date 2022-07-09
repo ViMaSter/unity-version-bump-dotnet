@@ -40,7 +40,7 @@ namespace UnityVersionBump.Core
 
         public static class EditorPRs
         {
-            const string EDITOR_PACKAGE = "editor";
+            public const string EDITOR_PACKAGE = "editor";
             private static readonly Regex ContentFilter = new("<!--uvb(.*)-->");
 
             public static async Task<IList<(PullRequest pullRequest, UnityVersion version)>> GetActivePRs(HttpClient httpClient)
@@ -346,7 +346,7 @@ namespace UnityVersionBump.Core
             private static string GenerateJSONInfo(UnityVersion targetVersion)
             {
                 return JsonConvert.SerializeObject(new PullRequestInfo(new PullRequestInfoData(){
-                    package = "editor", 
+                    package = EditorPRs.EDITOR_PACKAGE, 
                     version = targetVersion.ToUnityStringWithRevision()
                 }));
             }
@@ -393,7 +393,7 @@ namespace UnityVersionBump.Core
         {
             var currentEditorPullRequests = await EditorPRs.GetActivePRs(httpClient);
             var branchesOfPRs = currentEditorPullRequests.Select(entry => entry.pullRequest.head.label.Split(":")[1]);
-            var danglingBranches = (await GitHubAPI.GetAllBranches(httpClient)).Where(branch => branch.StartsWith(commitInfo.PullRequestPrefix)).Where(branch => !branchesOfPRs.Contains(branch));
+            var danglingBranches = (await GitHubAPI.GetAllBranches(httpClient)).Where(branch => branch.StartsWith($"{commitInfo.PullRequestPrefix}/{EditorPRs.EDITOR_PACKAGE}")).Where(branch => !branchesOfPRs.Contains(branch));
             foreach (var danglingBranch in danglingBranches)
             {
                 await GitHubAPI.DeleteBranch(httpClient, danglingBranch);
@@ -435,7 +435,7 @@ namespace UnityVersionBump.Core
             var commitMessage = $"build(deps): bump `UnityEditor` from `{currentVersion.ToUnityString()}` to `{targetVersion.ToUnityString()}`";
             var shaHasOfCommitOfTree = await GitHubAPI.CreateCommit(httpClient, commitMessage, shaHasOfTreeForNewFileProjectVersionTXT, shaHashOfLastCommitOnBaseBranch, commitInfo);
 
-            var targetBranchName = $"{commitInfo.PullRequestPrefix}/editor/{targetVersion.ToUnityString().Replace(".", "-")}";
+            var targetBranchName = $"{commitInfo.PullRequestPrefix}/{EditorPRs.EDITOR_PACKAGE}/{targetVersion.ToUnityString().Replace(".", "-")}";
             await GitHubAPI.CreateBranch(httpClient, targetBranchName, shaHasOfCommitOfTree);
 
             var body = TextFormatting.GenerateBody(currentVersion, targetVersion);

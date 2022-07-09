@@ -158,13 +158,13 @@ static async Task StartAnalysisAsync(ActionInputs inputs, IHttpClientFactory cli
         inputs.IncludePreReleasePackages
     );
 
-    //await HandleUnityEditorVersionUpdate(
-    //    clientFactory.CreateClient("unityHub"),
-    //    gitHubHttpClient,
-    //    repositoryInfo,
-    //    commitInfo,
-    //    inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>)
-    //);
+    await HandleUnityEditorVersionUpdate(
+        clientFactory.CreateClient("unityHub"),
+        gitHubHttpClient,
+        repositoryInfo,
+        commitInfo,
+        inputs.releaseStreams.Select(Enum.Parse<UnityVersion.ReleaseStreamType>)
+    );
 
     Environment.Exit(0);
 }
