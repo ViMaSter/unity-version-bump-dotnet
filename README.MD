@@ -4,17 +4,17 @@ Creates pull requests for outdated Unity Editor and UPM package versions.
 
 ## Usage
 
-Simply add this file as `.github/workflows/unityVersionCheck.yml`.  
-It's is an [opinionated example](https://basecamp.com/gettingreal/04.6-make-opinionated-software) which
-
+The following file is an [opinionated example](https://basecamp.com/gettingreal/04.6-make-opinionated-software) which
 - every day at 03:00 a.m.
 - checks for new
   - [stable stream releases](https://unity3d.com/get-unity/download/archive)
   - [long-term support (LTS) stream releases](https://unity3d.com/unity/qa/lts-releases)
 - and creates a PR if
   - the Unity project
-    - at the root of the repository this action is called from <sup>(see [My Unity project is inside a subdirectory of my repository](#my-unity-project-is-inside-a-subdirectory-of-my-repository))</sup>
+    - at the root of the repository <sup>(see [My Unity project is inside a subdirectory of my repository](#my-unity-project-is-inside-a-subdirectory-of-my-repository))</sup>
     - is older than any found release
+
+Add a file with the following content at `.github/workflows/unityVersionCheck.yml` inside your repository to run enable this tool:
 
 ```yml
 name: Check for new Unity version
