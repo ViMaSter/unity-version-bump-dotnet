@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as build-env
+FROM mcr.microsoft.com/dotnet/sdk:7.0 as build-env
 
 WORKDIR /app
 COPY . ./
@@ -13,6 +13,6 @@ LABEL com.github.actions.description="Creates pull requests for outdated Unity E
 LABEL com.github.actions.icon="download-cloud"
 LABEL com.github.actions.color="gray-dark"
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0
+FROM mcr.microsoft.com/dotnet/sdk:7.0
 COPY --from=build-env /app/out .
 ENTRYPOINT [ "dotnet", "/UnityVersionBump.Action.dll" ]

@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '6.0'
+  DOTNET_VERSION: '7.0'
 
 jobs:
   code-coverage:
