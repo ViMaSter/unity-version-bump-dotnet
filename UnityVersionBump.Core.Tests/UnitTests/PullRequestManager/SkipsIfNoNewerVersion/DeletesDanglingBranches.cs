@@ -104,7 +104,6 @@ class DeletesDanglingBranches
         ));
     }
 
-
     [TestCase]
     public async Task SucceedsIfNoLabel()
     {
@@ -128,5 +127,19 @@ class DeletesDanglingBranches
             currentVersion,
             highestVersion
         ));
+    }
+
+    [TestCase]
+    public void FailsIfBranchCantBeDeleted()
+    {
+        var currentVersion = new Core.UnityVersion("2022.2.0p1", "1234567890ab", true);
+        var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
+        var httpClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.FailedToDeleteBranch")).SetupGitHub(repositoryInfo, commitInfo);
+
+        Assert.ThrowsAsync<HttpRequestException>(async () =>
+        {
+            var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(httpClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+            Assert.IsNotNull(alreadyUpToDatePR);
+        });
     }
 }
