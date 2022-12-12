@@ -38,6 +38,7 @@ jobs:
     name: Release stream combinations
     needs: [setupCache]
     strategy:
+      max-parallel: 1
       matrix:
         releaseStreams: [
           { stream: 'Stable',       prefix: 'Stable' },
