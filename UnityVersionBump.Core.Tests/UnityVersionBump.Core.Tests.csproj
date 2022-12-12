@@ -57,9 +57,11 @@
 
   <ItemGroup>
     <None Remove="UnitTests\ProjectVersion\Resources\ExpectedHTTPResponse\GET\hub\prod\releases_win32.json.out" />
+    <None Remove="UnitTests\ProjectVersion\Resources\InternalServerError\GET\hub\prod\releases_win32.json.out" />
     <None Remove="UnitTests\ProjectVersion\Resources\NoPatchVersions\GET\hub\prod\releases_win32.json" />
     <None Remove="UnitTests\ProjectVersion\Resources\NoPatchVersions\GET\hub\prod\releases_win32.json.out" />
     <None Remove="UnitTests\ProjectVersion\Resources\releases-win32.json" />
+    <None Remove="UnitTests\ProjectVersion\Resources\UnexpectedHTTPResponse\GET\hub\prod\releases_win32.json.out" />
     <None Remove="UnitTests\PullRequestManager\Resources\ExistingDanglingBranches\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_1.out" />
     <None Remove="UnitTests\PullRequestManager\Resources\ExistingDanglingBranches\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_2.out" />
     <None Remove="UnitTests\PullRequestManager\Resources\ExistingDanglingBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
@@ -173,6 +175,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\InternalServerError\GET\hub\prod\releases_win32.json.out" />
+    <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\UnexpectedHTTPResponse\GET\hub\prod\releases_win32.json.out" />
     <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToClosePR\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2022_2_0f17.out" />
     <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToClosePR\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
     <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToClosePR\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />

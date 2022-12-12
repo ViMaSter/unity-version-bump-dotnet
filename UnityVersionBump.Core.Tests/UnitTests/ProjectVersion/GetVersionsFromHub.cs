@@ -20,6 +20,22 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
                 await Core.ProjectVersion.GetLatestFromHub(_stubHttpClient, Array.Empty<Core.UnityVersion.ReleaseStreamType>());
             });
         }
+        [TestCase]
+        public void ThrowsWhenUnityHubReturnsUnexpectedStatusCode()
+        {
+            var stubHttpClient = new HttpClient(new LocalFileMessageHandler("UnitTests.ProjectVersion.Resources.InternalServerError"));
+            Assert.ThrowsAsync<InvalidDataException>(async () => {
+                await Core.ProjectVersion.GetLatestFromHub(stubHttpClient, AllStreams);
+            });
+        }
+        [TestCase]
+        public void ThrowsWhenUnityHubReturnsUnexpectedData()
+        {
+            var stubHttpClient = new HttpClient(new LocalFileMessageHandler("UnitTests.ProjectVersion.Resources.UnexpectedHTTPResponse"));
+            Assert.ThrowsAsync<NotSupportedException>(async () => {
+                await Core.ProjectVersion.GetLatestFromHub(stubHttpClient, AllStreams);
+            });
+        }
 
         private static Core.UnityVersion.ReleaseStreamType[] AllStreams => Enum.GetValues<Core.UnityVersion.ReleaseStreamType>();
 

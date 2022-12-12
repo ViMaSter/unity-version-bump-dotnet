@@ -59,7 +59,7 @@ namespace UnityVersionBump.Core
             }
 
             var serverResponse = JsonConvert.DeserializeObject<Response>(await httpResponse.Content.ReadAsStringAsync());
-            if (serverResponse == null)
+            if (serverResponse?.beta == null || serverResponse.official == null)
             {
                 throw new NotSupportedException($"'{RELEASES_PATH}' responded with data that couldn't be deserialized:{Environment.NewLine}{httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult()}");
             }
