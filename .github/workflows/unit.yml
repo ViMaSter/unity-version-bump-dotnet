@@ -35,9 +35,8 @@ jobs:
     - name: Collect test code coverage
       run: |
         dotnet test \
-          UnityVersionBump.Core.Tests/UnityVersionBump.Core.Tests.csproj \
-          /p:CollectCoverage=true \
-          /p:CoverletOutputFormat=opencover
+          -p:CollectCoverage=true \
+          -e:CoverletOutputFormat=opencover
 
     - name: Upload test code coverage report to codecov.io
       uses: codecov/codecov-action@v3
