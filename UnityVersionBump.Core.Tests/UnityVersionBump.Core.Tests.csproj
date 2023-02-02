@@ -7,6 +7,10 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="UnitTests\PullRequestManager\Resources\ExistingDanglingBranches\DELETE\repos\ViMaSter\unity-version-bump-test-fixture\**" />
     <Compile Remove="UnitTests\PullRequestManager\Resources\ExistingDanglingBranches\GET\hub\**" />
@@ -177,110 +181,110 @@
   <ItemGroup>
     <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\InternalServerError\GET\hub\prod\releases_win32.json.out" />
     <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\UnexpectedHTTPResponse\GET\hub\prod\releases_win32.json.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToClosePR\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2022_2_0f17.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToClosePR\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToClosePR\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToClosePR\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToClosePR\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\_74\comments.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToClosePR\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToClosePR\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2022_2_0f17.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToClosePR\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToClosePR\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToClosePR\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToClosePR\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\_74\comments.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToClosePR\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToDeleteBranch\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToDeleteBranch\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_2.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToDeleteBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToDeleteBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2021_3_5f1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2022_2_0f17.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_72.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\72\comments.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\73\labels.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\_74\comments.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_72.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToFetchBranches\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2022_2_0f17.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToFetchBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToFetchBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToFetchBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToFetchBranches\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\_74\comments.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedToFetchBranches\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToDeleteBranch\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToDeleteBranch\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_2.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToDeleteBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToDeleteBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2021_3_5f1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2022_2_0f17.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_72.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\72\comments.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\73\labels.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\_74\comments.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_72.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToCreatePRClosureComment\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToFetchBranches\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2022_2_0f17.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToFetchBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToFetchBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToFetchBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToFetchBranches\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\_74\comments.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedToFetchBranches\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
     <EmbeddedResource Include="UnitTests\UPM\Resources\GG-JointJustice-manifest.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\ExpectedHTTPResponse\GET\hub\prod\releases_win32.json.out" />
     <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\NoPatchVersions\GET\hub\prod\releases_win32.json.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingDanglingBranches\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingDanglingBranches\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_2.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingDanglingBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingDanglingBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingEqualVersionAlpha\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingEqualVersionAlpha\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingEqualVersionStable\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingEqualVersionStable\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2021_3_5f1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_72.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\72\comments.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\73\labels.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_72.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\25\labels.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\25\labels.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingDanglingBranches\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingDanglingBranches\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\dangling_2.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingDanglingBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingDanglingBranches\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingEqualVersionAlpha\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingEqualVersionAlpha\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingEqualVersionStable\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingEqualVersionStable\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2021_3_5f1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_72.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\72\comments.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\73\labels.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\ExistingOutdatedVersion\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_72.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedBranch\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\25\labels.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedBranch\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedLabel\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedLabel\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\25\labels.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\FailedLabel\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture.out" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="UnitTests\ProjectVersion\Resources\ProjectVersion.txt" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\25\labels.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\TwoOpenPRs\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2022_2_0f17.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\TwoOpenPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\TwoOpenPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\TwoOpenPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\TwoOpenPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\_74\comments.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\TwoOpenPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\TwoPagesOfPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\TwoPagesOfPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
-    <EmbeddedResource Include="UnitTests\PullRequestManager\Resources\TwoPagesOfPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_2.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches\main.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\blobs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\commits.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\refs.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\git\trees.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\25\labels.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\NoExistingPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\TwoOpenPRs\DELETE\repos\ViMaSter\unity_version_bump_test_fixture\git\refs\heads\unity_version_bump\editor\2022_2_0f17.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\TwoOpenPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\TwoOpenPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\TwoOpenPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\TwoOpenPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\issues\_74\comments.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\TwoOpenPRs\POST\repos\ViMaSter\unity_version_bump_test_fixture\pulls\_74.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\TwoPagesOfPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\branches.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\TwoPagesOfPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_1.out" />
+    <EmbeddedResource Include="UnitTests\EditorPullRequestManager\Resources\TwoPagesOfPRs\GET\repos\ViMaSter\unity_version_bump_test_fixture\pulls_per_page_100_page_2.out" />
   </ItemGroup>
 
   <ItemGroup>

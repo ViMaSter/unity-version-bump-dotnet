@@ -3,23 +3,23 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityVersionBump.Core.Tests.Stubs;
 
-namespace UnityVersionBump.Core.Tests.UnitTests.PullRequestManager.CreatePullRequestIfTargetVersionNewer;
+namespace UnityVersionBump.Core.Tests.UnitTests.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer;
 
 class ExistingOutdatedPRs
 {
-    private Core.PullRequestManager.RepositoryInfo repositoryInfo;
-    private Core.PullRequestManager.CommitInfo commitInfo;
+    private Core.EditorPullRequestManager.RepositoryInfo repositoryInfo;
+    private Core.EditorPullRequestManager.CommitInfo commitInfo;
     private HttpClient mockedHTTPClient;
 
     public ExistingOutdatedPRs()
     {
-        repositoryInfo = new Core.PullRequestManager.RepositoryInfo
+        repositoryInfo = new Core.EditorPullRequestManager.RepositoryInfo
         {
             RelativePathToUnityProject = "",
             UserName = "ViMaSter",
             RepositoryName = "unity-version-bump-test-fixture"
         };
-        commitInfo = new Core.PullRequestManager.CommitInfo
+        commitInfo = new Core.EditorPullRequestManager.CommitInfo
         {
             APIToken = "ghp_api",
             FullName = "UnityVersionBump (bot)",
@@ -28,7 +28,7 @@ class ExistingOutdatedPRs
             PullRequestPrefix = "unity-version-bump"
         };
 
-        mockedHTTPClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.ExistingOutdatedVersion")).SetupGitHub(repositoryInfo, commitInfo);
+        mockedHTTPClient = new HttpClient(new LocalFileMessageHandler("UnitTests.EditorPullRequestManager.Resources.ExistingOutdatedVersion")).SetupGitHub(repositoryInfo, commitInfo);
     }
 
     private static readonly object[] _labels =
@@ -45,10 +45,10 @@ class ExistingOutdatedPRs
 
         commitInfo.PullRequestLabels = labels;
 
-        var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+        var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
         Assert.IsNull(alreadyUpToDatePR);
 
-        Assert.IsNotEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.IsNotEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
@@ -65,10 +65,10 @@ class ExistingOutdatedPRs
 
         commitInfo.PullRequestLabels = labels;
 
-        var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+        var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
         Assert.IsNull(alreadyUpToDatePR);
 
-        Assert.IsNotEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.IsNotEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
@@ -85,10 +85,10 @@ class ExistingOutdatedPRs
 
         commitInfo.PullRequestLabels = labels;
 
-        var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+        var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
         Assert.IsNull(alreadyUpToDatePR);
 
-        Assert.IsEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
@@ -105,10 +105,10 @@ class ExistingOutdatedPRs
 
         commitInfo.PullRequestLabels = labels;
 
-        var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+        var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
         Assert.IsNotNull(alreadyUpToDatePR);
 
-        Assert.IsEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
@@ -125,11 +125,11 @@ class ExistingOutdatedPRs
 
         commitInfo.PullRequestLabels = labels;
 
-        var failingClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.FailedToCreatePRClosureComment")).SetupGitHub(repositoryInfo, commitInfo);
+        var failingClient = new HttpClient(new LocalFileMessageHandler("UnitTests.EditorPullRequestManager.Resources.FailedToCreatePRClosureComment")).SetupGitHub(repositoryInfo, commitInfo);
 
         Assert.ThrowsAsync<HttpRequestException>(async () =>
         {
-            var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(failingClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+            var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(failingClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
             Assert.IsNotNull(alreadyUpToDatePR);
         });
     }
@@ -142,11 +142,11 @@ class ExistingOutdatedPRs
 
         commitInfo.PullRequestLabels = labels;
 
-        var failingClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.FailedToClosePR")).SetupGitHub(repositoryInfo, commitInfo);
+        var failingClient = new HttpClient(new LocalFileMessageHandler("UnitTests.EditorPullRequestManager.Resources.FailedToClosePR")).SetupGitHub(repositoryInfo, commitInfo);
 
         Assert.ThrowsAsync<HttpRequestException>(async () =>
         {
-            var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(failingClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+            var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(failingClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
             Assert.IsNotNull(alreadyUpToDatePR);
         });
     }
@@ -159,11 +159,11 @@ class ExistingOutdatedPRs
 
         commitInfo.PullRequestLabels = labels;
 
-        var failingClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.FailedToFetchBranches")).SetupGitHub(repositoryInfo, commitInfo);
+        var failingClient = new HttpClient(new LocalFileMessageHandler("UnitTests.EditorPullRequestManager.Resources.FailedToFetchBranches")).SetupGitHub(repositoryInfo, commitInfo);
 
         Assert.ThrowsAsync<HttpRequestException>(async () =>
         {
-            var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(failingClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+            var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(failingClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
             Assert.IsNotNull(alreadyUpToDatePR);
         });
     }

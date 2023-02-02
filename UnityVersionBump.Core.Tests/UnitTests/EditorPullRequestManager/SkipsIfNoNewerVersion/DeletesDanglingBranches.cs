@@ -4,23 +4,23 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityVersionBump.Core.Tests.Stubs;
 
-namespace UnityVersionBump.Core.Tests.UnitTests.PullRequestManager.SkipsIfNoNewerVersion;
+namespace UnityVersionBump.Core.Tests.UnitTests.EditorPullRequestManager.SkipsIfNoNewerVersion;
 
 class DeletesDanglingBranches
 {
-    private Core.PullRequestManager.RepositoryInfo repositoryInfo;
-    private Core.PullRequestManager.CommitInfo commitInfo;
+    private Core.EditorPullRequestManager.RepositoryInfo repositoryInfo;
+    private Core.EditorPullRequestManager.CommitInfo commitInfo;
     private HttpClient mockedHTTPClient;
 
     public DeletesDanglingBranches()
     {
-        repositoryInfo = new Core.PullRequestManager.RepositoryInfo
+        repositoryInfo = new Core.EditorPullRequestManager.RepositoryInfo
         {
             RelativePathToUnityProject = "",
             UserName = "ViMaSter",
             RepositoryName = "unity-version-bump-test-fixture"
         };
-        commitInfo = new Core.PullRequestManager.CommitInfo
+        commitInfo = new Core.EditorPullRequestManager.CommitInfo
         {
             APIToken = "ghp_api",
             FullName = "UnityVersionBump (bot)",
@@ -29,7 +29,7 @@ class DeletesDanglingBranches
             PullRequestPrefix = "unity-version-bump"
         };
 
-        mockedHTTPClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.ExistingDanglingBranches")).SetupGitHub(repositoryInfo, commitInfo);
+        mockedHTTPClient = new HttpClient(new LocalFileMessageHandler("UnitTests.EditorPullRequestManager.Resources.ExistingDanglingBranches")).SetupGitHub(repositoryInfo, commitInfo);
     }
 
     [TestCase]
@@ -38,10 +38,10 @@ class DeletesDanglingBranches
         var currentVersion = new Core.UnityVersion("2022.2.0p1", "1234567890ab", true);
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
 
-        var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+        var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
         Assert.IsNotNull(alreadyUpToDatePR);
 
-        Assert.IsEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
@@ -56,10 +56,10 @@ class DeletesDanglingBranches
         var currentVersion = new Core.UnityVersion("2022.2.0p1", "1234567890ab", true);
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
 
-        var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+        var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
         Assert.IsNotNull(alreadyUpToDatePR);
 
-        Assert.IsEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
@@ -74,10 +74,10 @@ class DeletesDanglingBranches
         var currentVersion = new Core.UnityVersion("2022.2.0p1", "1234567890ab", true);
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "1234567890ab", true);
 
-        var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+        var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
         Assert.IsNotNull(alreadyUpToDatePR);
 
-        Assert.IsEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
@@ -92,10 +92,10 @@ class DeletesDanglingBranches
         var currentVersion = new Core.UnityVersion("2022.2.0p1", "1234567890ab", true);
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
 
-        var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+        var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
         Assert.IsNotNull(alreadyUpToDatePR);
 
-        Assert.IsEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
@@ -110,12 +110,12 @@ class DeletesDanglingBranches
         var currentVersion = new Core.UnityVersion("2022.2.0p1", "1234567890ab", true);
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
 
-        var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+        var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
         Assert.IsNotNull(alreadyUpToDatePR);
 
-        Assert.IsEmpty(await Core.PullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
-            new Core.PullRequestManager.CommitInfo
+            new Core.EditorPullRequestManager.CommitInfo
             {
                 APIToken = "ghp_api",
                 FullName = "UnityVersionBump (bot)",
@@ -134,11 +134,11 @@ class DeletesDanglingBranches
     {
         var currentVersion = new Core.UnityVersion("2022.2.0p1", "1234567890ab", true);
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
-        var httpClient = new HttpClient(new LocalFileMessageHandler("UnitTests.PullRequestManager.Resources.FailedToDeleteBranch")).SetupGitHub(repositoryInfo, commitInfo);
+        var httpClient = new HttpClient(new LocalFileMessageHandler("UnitTests.EditorPullRequestManager.Resources.FailedToDeleteBranch")).SetupGitHub(repositoryInfo, commitInfo);
 
         Assert.ThrowsAsync<HttpRequestException>(async () =>
         {
-            var alreadyUpToDatePR = await Core.PullRequestManager.CleanupAndCheckForAlreadyExistingPR(httpClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
+            var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(httpClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
             Assert.IsNotNull(alreadyUpToDatePR);
         });
     }

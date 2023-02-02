@@ -10,7 +10,7 @@ namespace UnityVersionBump.Core
 {
     public static class HttpClientGitHubExtensions
     {
-        public static HttpClient SetupGitHub(this HttpClient client, PullRequestManager.RepositoryInfo repositoryInfo, PullRequestManager.CommitInfo commitInfo)
+        public static HttpClient SetupGitHub(this HttpClient client, EditorPullRequestManager.RepositoryInfo repositoryInfo, EditorPullRequestManager.CommitInfo commitInfo)
         {
             client.DefaultRequestHeaders.Authorization = new("token", commitInfo.APIToken);
             client.DefaultRequestHeaders.UserAgent.Add(new("UnityVersionBump", "1.0.0"));
@@ -18,7 +18,7 @@ namespace UnityVersionBump.Core
             return client;
         }
     }
-    public static class PullRequestManager
+    public static class EditorPullRequestManager
     {
         public record RepositoryInfo
         {
