@@ -39,7 +39,7 @@ jobs:
           -e:CoverletOutputFormat=opencover
 
     - name: Upload test code coverage report to codecov.io
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
 
   build-and-test:
     name: Build and test on ${{matrix.os}}
