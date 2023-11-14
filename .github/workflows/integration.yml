@@ -96,7 +96,7 @@ jobs:
 
       - name: Mark pipeline as failed, if previous step has succeeded
         if: ${{steps.updateCheck.outputs.has-never-version}}
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
               core.setFailed('The previous step should fail')
@@ -126,7 +126,7 @@ jobs:
 
       - name: Mark pipeline as failed, if previous step has succeeded
         if: ${{steps.updateCheck.outputs.has-never-version}}
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
               core.setFailed('The previous step should fail')
