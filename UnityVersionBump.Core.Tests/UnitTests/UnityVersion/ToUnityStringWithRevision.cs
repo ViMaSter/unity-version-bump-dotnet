@@ -14,6 +14,6 @@ public class ToUnityStringWithRevision
     [TestCaseSource(nameof(Versions))]
     public void ToUnityStringGeneratesUnityConformFormat(string unityVersion, string revision)
     {
-        Assert.AreEqual($"{unityVersion} ({revision})", new Core.UnityVersion(unityVersion, revision, false).ToUnityStringWithRevision());
+        Assert.That(new Core.UnityVersion(unityVersion, revision, false).ToUnityStringWithRevision(), Is.EqualTo($"{unityVersion} ({revision})"));
     }
 }

@@ -25,7 +25,7 @@ internal class ReleaseStreams
         {
             var laterRelease = releases[i - 1];
             var earlierRelease = releases[i];
-            Assert.Less(earlierRelease, laterRelease);
+            Assert.That(earlierRelease, Is.LessThan(laterRelease));
         }
     }
 
@@ -86,7 +86,7 @@ internal class ReleaseStreams
         {
             var laterRelease = unityVersions[i - 1];
             var earlierRelease = unityVersions[i];
-            Assert.Less(earlierRelease, laterRelease);
+            Assert.That(earlierRelease, Is.LessThan(laterRelease));
         }
     }
 }

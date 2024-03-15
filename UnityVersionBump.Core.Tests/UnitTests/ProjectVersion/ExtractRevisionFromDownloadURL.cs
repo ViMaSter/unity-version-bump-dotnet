@@ -17,7 +17,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         [TestCaseSource(nameof(URLAndExpectedRevision))]
         public void CanParseValidURL(string downloadURL, string revision)
         {
-            Assert.AreEqual(revision, Core.ProjectVersion.ExtractRevisionFromDownloadURL(downloadURL));
+            Assert.That(Core.ProjectVersion.ExtractRevisionFromDownloadURL(downloadURL), Is.EqualTo(revision));
         }
 
         private static readonly object[] InvalidUrls = {

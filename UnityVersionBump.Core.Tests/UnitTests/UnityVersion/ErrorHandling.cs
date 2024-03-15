@@ -18,8 +18,7 @@ public class ErrorHandling
         var exception = Assert.Throws<MismatchingLengthException>(() => {
             _ = new Core.UnityVersion(invalidUnityVersion, "1234567890ab", false);
         });
-        Assert.NotNull(exception);
-        StringAssert.Contains(failingPart.ToString(), exception!.Message);
+        Assert.That(exception!.Message, Does.Contain(failingPart.ToString()));
     }
 
     private static object[] _invalidSyntax = {
@@ -41,8 +40,7 @@ public class ErrorHandling
         var exception = Assert.Throws<InvalidVersionSyntaxException>(() => {
             _ = new Core.UnityVersion(invalidFormat, "1234567890ab", false);
         });
-        Assert.NotNull(exception);
-        StringAssert.Contains(invalidFormat, exception!.Message);
+        Assert.That(exception!.Message, Does.Contain(invalidFormat));
     }
 
     private static object[] _unsupportedReleaseStream = {
@@ -76,7 +74,6 @@ public class ErrorHandling
         var exception = Assert.Throws<UnsupportedReleaseStream>(() => {
             _ = new Core.UnityVersion($"2021.1.0{releaseStreamShorthand}12", "1234567890ab", false);
         });
-        Assert.NotNull(exception);
-        StringAssert.Contains($"'{releaseStreamShorthand}'", exception!.Message);
+        Assert.That(exception!.Message, Does.Contain($"'{releaseStreamShorthand}'"));
     }
 }

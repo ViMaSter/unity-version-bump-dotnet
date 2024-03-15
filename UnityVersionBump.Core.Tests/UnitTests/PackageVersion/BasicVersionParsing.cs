@@ -11,10 +11,10 @@ namespace UnityVersionBump.Core.Tests.UnitTests.PackageVersion
         {
             var version = new Core.PackageVersion("1.2.3");
 
-            Assert.IsFalse(version.IsPreview);
-            Assert.AreEqual(1, version.GetVersionPart(Core.PackageVersion.VersionPart.Major));
-            Assert.AreEqual(2, version.GetVersionPart(Core.PackageVersion.VersionPart.Minor));
-            Assert.AreEqual(3, version.GetVersionPart(Core.PackageVersion.VersionPart.Patch));
+            Assert.That(version.IsPreview, Is.False);
+            Assert.That(version.GetVersionPart(Core.PackageVersion.VersionPart.Major), Is.EqualTo(1));
+            Assert.That(version.GetVersionPart(Core.PackageVersion.VersionPart.Minor), Is.EqualTo(2));
+            Assert.That(version.GetVersionPart(Core.PackageVersion.VersionPart.Patch), Is.EqualTo(3));
             Assert.Throws<KeyNotFoundException>(() => version.GetVersionPart(Core.PackageVersion.VersionPart.Suffix));
             Assert.Throws<KeyNotFoundException>(() => version.GetVersionPart(Core.PackageVersion.VersionPart.SuffixNumber));
         }
@@ -24,13 +24,13 @@ namespace UnityVersionBump.Core.Tests.UnitTests.PackageVersion
         {
             var version = new Core.PackageVersion("1.2.3-preview.4");
 
-            Assert.IsTrue(version.IsPreview);
-            Assert.AreEqual(1, version.GetVersionPart(Core.PackageVersion.VersionPart.Major));
-            Assert.AreEqual(2, version.GetVersionPart(Core.PackageVersion.VersionPart.Minor));
-            Assert.AreEqual(3, version.GetVersionPart(Core.PackageVersion.VersionPart.Patch));
-            Assert.AreEqual(5, version.GetVersionPart(Core.PackageVersion.VersionPart.SuffixNumber));
+            Assert.That(version.IsPreview, Is.True);
+            Assert.That(version.GetVersionPart(Core.PackageVersion.VersionPart.Major), Is.EqualTo(1));
+            Assert.That(version.GetVersionPart(Core.PackageVersion.VersionPart.Minor), Is.EqualTo(2));
+            Assert.That(version.GetVersionPart(Core.PackageVersion.VersionPart.Patch), Is.EqualTo(3));
+            Assert.That(version.GetVersionPart(Core.PackageVersion.VersionPart.SuffixNumber), Is.EqualTo(5));
             Assert.Throws<KeyNotFoundException>(() => version.GetVersionPart(Core.PackageVersion.VersionPart.Suffix));
-            Assert.AreEqual("preview.4", version._suffix);
+            Assert.That(version._suffix, Is.EqualTo("preview.4"));
         }
 
         [TestCase]

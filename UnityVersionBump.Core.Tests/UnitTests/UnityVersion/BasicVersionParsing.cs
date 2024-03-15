@@ -12,21 +12,20 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             var ltsVersion = new Core.UnityVersion("2022.2.0p1", CORRECT_REVISION, true);
             var nonLTSVersion = new Core.UnityVersion("2022.2.0p1", CORRECT_REVISION, false);
 
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Patch, ltsVersion.ReleaseStream);
-            Assert.IsTrue(ltsVersion.IsLTS);
-            Assert.AreEqual(2022, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(2, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.That(ltsVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Patch));
+            Assert.That(ltsVersion.IsLTS, Is.True);
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2022));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(2));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(0));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(1));
             Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
 
-
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Patch, nonLTSVersion.ReleaseStream);
-            Assert.IsFalse(nonLTSVersion.IsLTS);
-            Assert.AreEqual(2022, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(2, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.That(nonLTSVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Patch));
+            Assert.That(nonLTSVersion.IsLTS, Is.False);
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2022));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(2));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(0));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(1));
             Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
         }
 
@@ -36,20 +35,20 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             var ltsVersion = new Core.UnityVersion("2022.2.0", CORRECT_REVISION, true);
             var nonLTSVersion = new Core.UnityVersion("2022.2.0", CORRECT_REVISION, false);
 
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Stable, ltsVersion.ReleaseStream);
-            Assert.IsTrue(ltsVersion.IsLTS);
-            Assert.AreEqual(2022, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(2, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.That(ltsVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Stable));
+            Assert.That(ltsVersion.IsLTS, Is.True);
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2022));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(2));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(0));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(0));
             Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
 
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Stable, nonLTSVersion.ReleaseStream);
-            Assert.IsFalse(nonLTSVersion.IsLTS);
-            Assert.AreEqual(2022, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(2, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.That(nonLTSVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Stable));
+            Assert.That(nonLTSVersion.IsLTS, Is.False);
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2022));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(2));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(0));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(0));
             Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
         }
 
@@ -59,20 +58,20 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             var ltsVersion = new Core.UnityVersion("2022.2.0f1", CORRECT_REVISION, true);
             var nonLTSVersion = new Core.UnityVersion("2022.2.0f1", CORRECT_REVISION, false);
 
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Stable, ltsVersion.ReleaseStream);
-            Assert.IsTrue(ltsVersion.IsLTS);
-            Assert.AreEqual(2022, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(2, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.That(ltsVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Stable));
+            Assert.That(ltsVersion.IsLTS, Is.True);
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2022));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(2));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(0));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(1));
             Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
 
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Stable, nonLTSVersion.ReleaseStream);
-            Assert.IsFalse(nonLTSVersion.IsLTS);
-            Assert.AreEqual(2022, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(2, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.That(nonLTSVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Stable));
+            Assert.That(nonLTSVersion.IsLTS, Is.False);
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2022));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(2));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(0));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(1));
             Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
         }
 
@@ -82,21 +81,20 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             var ltsVersion = new Core.UnityVersion("2021.1.1b15", CORRECT_REVISION, true);
             var nonLTSVersion = new Core.UnityVersion("2021.1.1b15", CORRECT_REVISION, false);
 
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Beta, ltsVersion.ReleaseStream);
-            Assert.IsTrue(ltsVersion.IsLTS);
-            Assert.AreEqual(2021, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(15, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.That(ltsVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Beta));
+            Assert.That(ltsVersion.IsLTS, Is.True);
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2021));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(1));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(1));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(15));
             Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
 
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Beta, nonLTSVersion.ReleaseStream);
-            Assert.IsFalse(nonLTSVersion.IsLTS);
-            Assert.AreEqual(2021, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(15, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
-            Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
+            Assert.That(nonLTSVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Beta));
+            Assert.That(nonLTSVersion.IsLTS, Is.False);
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2021));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(1));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(1));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(15));
         }
 
         [TestCase]
@@ -105,20 +103,20 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UnityVersion
             var ltsVersion = new Core.UnityVersion("2021.1.0a15", CORRECT_REVISION, true);
             var nonLTSVersion = new Core.UnityVersion("2021.1.0a15", CORRECT_REVISION, false);
 
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Alpha, ltsVersion.ReleaseStream);
-            Assert.IsTrue(ltsVersion.IsLTS);
-            Assert.AreEqual(2021, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(1, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(0, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(15, ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.That(ltsVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Alpha));
+            Assert.That(ltsVersion.IsLTS, Is.True);
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2021));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(1));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(0));
+            Assert.That(ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(15));
             Assert.Throws<ArgumentException>(() => ltsVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
 
-            Assert.AreEqual(Core.UnityVersion.ReleaseStreamType.Alpha, nonLTSVersion.ReleaseStream);
-            Assert.IsFalse(nonLTSVersion.IsLTS);
-            Assert.AreEqual(2021, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major));
-            Assert.AreEqual(1, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor));
-            Assert.AreEqual(0, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch));
-            Assert.AreEqual(15, nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build));
+            Assert.That(nonLTSVersion.ReleaseStream, Is.EqualTo(Core.UnityVersion.ReleaseStreamType.Alpha));
+            Assert.That(nonLTSVersion.IsLTS, Is.False);
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Major), Is.EqualTo(2021));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Minor), Is.EqualTo(1));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Patch), Is.EqualTo(0));
+            Assert.That(nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.Build), Is.EqualTo(15));
             Assert.Throws<ArgumentException>(() => nonLTSVersion.GetVersionPart(Core.UnityVersion.VersionPart.ReleaseStream));
         }
     }

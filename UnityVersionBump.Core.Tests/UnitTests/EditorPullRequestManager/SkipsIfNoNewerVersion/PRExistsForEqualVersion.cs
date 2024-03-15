@@ -38,7 +38,7 @@ class PRExistsForEqualVersion
         var highestVersion = new Core.UnityVersion("2021.3.5f1", "40eb3a945986", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null); 
     }
 
     [TestCase]
@@ -50,7 +50,7 @@ class PRExistsForEqualVersion
         var highestVersion = new Core.UnityVersion("2021.3.5a1", "40eb3a945986", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(alphaHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null);
     }
 
     [TestCase]
@@ -60,7 +60,7 @@ class PRExistsForEqualVersion
         var highestVersion = new Core.UnityVersion("2020.2.0p1", "1234567890ab", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null);
     }
 
     [TestCase]
@@ -70,6 +70,6 @@ class PRExistsForEqualVersion
         var highestVersion = new Core.UnityVersion("2019.2.0p1", "234567890abc", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null);
     }
 }

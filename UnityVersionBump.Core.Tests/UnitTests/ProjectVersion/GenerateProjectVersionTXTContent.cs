@@ -10,7 +10,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion
         {
             var projectVersionTxt = new StreamReader(GetType().Assembly.GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.Resources.ProjectVersion.txt")!).ReadToEnd().ReplaceLineEndings("\n");
             var unityVersion = Core.ProjectVersion.FromProjectVersionTXT(projectVersionTxt);
-            Assert.AreEqual(projectVersionTxt, Core.ProjectVersion.GenerateProjectVersionTXTContent(unityVersion));
+            Assert.That(Core.ProjectVersion.GenerateProjectVersionTXTContent(unityVersion), Is.EqualTo(projectVersionTxt));
         }
     }
 }

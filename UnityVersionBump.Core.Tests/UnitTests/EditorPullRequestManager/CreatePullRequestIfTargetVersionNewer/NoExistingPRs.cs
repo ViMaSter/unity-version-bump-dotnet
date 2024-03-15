@@ -38,15 +38,15 @@ class NoExistingPRs
         var highestVersion = new Core.UnityVersion("2022.2.1f2", "234567890abc", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
 
-        Assert.IsNotEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Not.Empty);
     }
 
     [TestCase]
@@ -56,15 +56,15 @@ class NoExistingPRs
         var highestVersion = new Core.UnityVersion("2022.2.1a2", "234567890abc", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
 
-        Assert.IsNotEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Not.Empty);
     }
 
     [TestCase]
@@ -74,15 +74,15 @@ class NoExistingPRs
         var highestVersion = new Core.UnityVersion("2022.2.0p1", "1234567890ab", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
 
-        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Empty);
     }
 
     [TestCase]
@@ -92,14 +92,14 @@ class NoExistingPRs
         var highestVersion = new Core.UnityVersion("2021.2.0p1", "234567890abc", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
 
-        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Empty);
     }
 }

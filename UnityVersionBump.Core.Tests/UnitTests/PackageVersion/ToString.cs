@@ -12,7 +12,7 @@ public class ToString
     [TestCaseSource(nameof(Versions))]
     public void ToStringGeneratesSemanticVersionFormat(string packageVersion)
     {
-        Assert.AreEqual(packageVersion, new Core.PackageVersion(packageVersion).ToString());
+        Assert.That(new Core.PackageVersion(packageVersion).ToString(), Is.EqualTo(packageVersion));
     }
 
     private static readonly object[][] VersionsWithPrefix = {
@@ -28,6 +28,6 @@ public class ToString
     [TestCaseSource(nameof(VersionsWithPrefix))]
     public void ToStringGeneratesSemanticVersionFormat(string versionWithLeftPadding, string versionWithoutLeftPadding)
     {
-        Assert.AreEqual(versionWithoutLeftPadding, new Core.PackageVersion(versionWithLeftPadding).ToString());
+        Assert.That(new Core.PackageVersion(versionWithLeftPadding).ToString(), Is.EqualTo(versionWithoutLeftPadding));
     }
 }

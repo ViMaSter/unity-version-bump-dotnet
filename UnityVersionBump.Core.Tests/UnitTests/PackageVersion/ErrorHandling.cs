@@ -23,7 +23,7 @@ public class ErrorHandling
         {
             _ = new Core.PackageVersion(invalidFormat);
         });
-        Assert.NotNull(exception);
-        StringAssert.Contains(invalidFormat, exception!.Message);
+        Assert.That(exception!.Message, Does.Contain(invalidFormat));
+
     }
 }
