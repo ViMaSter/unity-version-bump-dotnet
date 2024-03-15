@@ -22,7 +22,7 @@ namespace UnityVersionBump.Core.Tests.SmokeTests
         [TestCaseSource(nameof(UnityVersionsFromSymbolServer))]
         public void VerifyAllVersionsOfUnityAreParsable(string unityVersion)
         {
-            Assert.Greater(new UnityVersion(unityVersion, "1234567890ab", false).GetComparable(), 500000000);
+            Assert.That(new UnityVersion(unityVersion, "1234567890ab", false).GetComparable(), Is.GreaterThan(500000000));
         }
     }
 }

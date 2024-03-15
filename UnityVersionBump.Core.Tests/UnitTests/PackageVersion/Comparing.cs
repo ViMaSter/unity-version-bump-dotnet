@@ -21,15 +21,15 @@ internal class Comparing
         {
             var laterRelease = OrderedReleases[i - 1];
             var earlierRelease = OrderedReleases[i];
-            Assert.Less(earlierRelease, laterRelease);
+            Assert.That(earlierRelease, Is.LessThan(laterRelease));
 
-            Assert.IsTrue(earlierRelease < laterRelease);
-            Assert.IsFalse(earlierRelease > laterRelease);
+            Assert.That(earlierRelease < laterRelease, Is.True);
+            Assert.That(earlierRelease > laterRelease, Is.False);
 
-            Assert.IsFalse(earlierRelease < null);
-            Assert.IsTrue(null < earlierRelease);
-            Assert.IsTrue(earlierRelease > null);
-            Assert.IsFalse(null > earlierRelease);
+            Assert.That(earlierRelease < null, Is.False);
+            Assert.That(null < earlierRelease, Is.True);
+            Assert.That(earlierRelease > null, Is.True);
+            Assert.That(null > earlierRelease, Is.False);
         }
     }
 
@@ -37,29 +37,29 @@ internal class Comparing
     public void MatchingVersionsAreEqual(Core.PackageVersion packageVersion)
     {
         // ReSharper disable once EqualExpressionComparison (needed to hit coverage)
-        Assert.IsTrue(packageVersion.Equals(packageVersion));
-        Assert.AreEqual(packageVersion, new Core.PackageVersion(packageVersion.ToString()));
+        Assert.That(packageVersion.Equals(packageVersion), Is.True);
+        Assert.That(new Core.PackageVersion(packageVersion.ToString()), Is.EqualTo(packageVersion));
 
-        Assert.AreEqual(packageVersion.GetHashCode(), packageVersion.GetHashCode());
-        Assert.AreEqual(packageVersion.GetHashCode(), new Core.PackageVersion(packageVersion.ToString()).GetHashCode());
+        Assert.That(packageVersion.GetHashCode(), Is.EqualTo(packageVersion.GetHashCode()));
+        Assert.That(packageVersion.GetHashCode(), Is.EqualTo(new Core.PackageVersion(packageVersion.ToString()).GetHashCode()));
     }
 
     [TestCaseSource(nameof(OrderedReleases))]
     public void CanCompareAgainstNull(Core.PackageVersion packageVersion)
     {
-        Assert.AreEqual(1, packageVersion.CompareTo(null));
-        Assert.AreEqual(1, packageVersion.CompareTo("not same type"));
+        Assert.That(packageVersion.CompareTo(null), Is.EqualTo(1));
+        Assert.That(packageVersion.CompareTo("not same type"), Is.EqualTo(1));
     }
 
     [TestCase]
     public void CanSortReleases()
     {
-        CollectionAssert.AreEqual(OrderedReleases, OrderedReleases.Reverse().OrderByDescending(version => version));
+        Assert.That(OrderedReleases, Is.EqualTo(OrderedReleases.Reverse().OrderByDescending(version => version)));
     }
 
     [TestCaseSource(nameof(OrderedReleases))]
     public void SameInputCausesSameOutput(Core.PackageVersion projectVersion)
     {
-        Assert.AreEqual(new Core.PackageVersion(projectVersion.ToString()), new Core.PackageVersion(projectVersion.ToString()));
+        Assert.That(new Core.PackageVersion(projectVersion.ToString()), Is.EqualTo(new Core.PackageVersion(projectVersion.ToString())));
     }
 }

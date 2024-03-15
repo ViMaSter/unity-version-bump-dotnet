@@ -43,7 +43,7 @@ namespace UnityVersionBump.Core.Tests.SmokeTests
             var browser = new UPM.Browser(new HttpClient(), null, UPM.Models.Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT);
 
             var version = (await browser.GetLatestVersion(PACKAGE_NAME))!;
-            Assert.Greater(version.GetVersionPart(PackageVersion.VersionPart.Major), 0);
+            Assert.That(version.GetVersionPart(PackageVersion.VersionPart.Major), Is.GreaterThan(0));
 
         }
         [TestCase]
@@ -53,7 +53,7 @@ namespace UnityVersionBump.Core.Tests.SmokeTests
             var browser = new UPM.Browser(new HttpClient(), null, "https://package.openupm.com");
 
             var version = (await browser.GetLatestVersion(PACKAGE_NAME))!;
-            Assert.Greater(version.GetVersionPart(PackageVersion.VersionPart.Major), 0);
+            Assert.That(version.GetVersionPart(PackageVersion.VersionPart.Major), Is.GreaterThan(0));
         }
         [TestCase]
         public async Task ThrowsOn404FromOfficialPackageRepository()
@@ -62,8 +62,8 @@ namespace UnityVersionBump.Core.Tests.SmokeTests
             var logger = new LoggerStub();
             var browser = new UPM.Browser(new HttpClient(), logger, UPM.Models.Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT);
             await browser.GetLatestVersion(PACKAGE_NAME);
-            Assert.IsTrue(logger.HasReceivedMessage("Unexpected return code"));
-            Assert.IsTrue(logger.HasReceivedMessage("404"));
+            Assert.That(logger.HasReceivedMessage("Unexpected return code"), Is.True);
+            Assert.That(logger.HasReceivedMessage("404"), Is.True);
         }
         [TestCase]
         public async Task ThrowsOn404FromOpenUPM()
@@ -72,8 +72,8 @@ namespace UnityVersionBump.Core.Tests.SmokeTests
             var logger = new LoggerStub();
             var browser = new UPM.Browser(new HttpClient(), logger, "https://package.openupm.com");
             await browser.GetLatestVersion(PACKAGE_NAME);
-            Assert.IsTrue(logger.HasReceivedMessage("Unexpected return code"));
-            Assert.IsTrue(logger.HasReceivedMessage("404"));
+            Assert.That(logger.HasReceivedMessage("Unexpected return code"), Is.True);
+            Assert.That(logger.HasReceivedMessage("404"), Is.True);
         }
     }
 }

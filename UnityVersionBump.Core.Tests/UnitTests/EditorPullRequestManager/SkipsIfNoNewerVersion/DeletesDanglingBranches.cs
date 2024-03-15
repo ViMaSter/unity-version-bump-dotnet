@@ -39,15 +39,15 @@ class DeletesDanglingBranches
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null);
 
-        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Empty);
     }
 
     [TestCase]
@@ -57,15 +57,15 @@ class DeletesDanglingBranches
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null);
 
-        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Empty);
     }
 
     [TestCase]
@@ -75,15 +75,15 @@ class DeletesDanglingBranches
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "1234567890ab", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null);
 
-        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Empty);
     }
 
     [TestCase]
@@ -93,15 +93,15 @@ class DeletesDanglingBranches
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null);
 
-        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Empty);
     }
 
     [TestCase]
@@ -111,9 +111,9 @@ class DeletesDanglingBranches
         var highestVersion = new Core.UnityVersion("2022.2.0a17", "234567890abc", true);
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null);
 
-        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             new Core.EditorPullRequestManager.CommitInfo
             {
@@ -126,7 +126,7 @@ class DeletesDanglingBranches
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Empty);
     }
 
     [TestCase]
@@ -139,7 +139,7 @@ class DeletesDanglingBranches
         Assert.ThrowsAsync<HttpRequestException>(async () =>
         {
             var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(httpClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-            Assert.IsNotNull(alreadyUpToDatePR);
+            Assert.That(alreadyUpToDatePR, Is.Not.Null);
         });
     }
 }

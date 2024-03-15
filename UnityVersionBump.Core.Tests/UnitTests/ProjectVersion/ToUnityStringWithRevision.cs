@@ -14,6 +14,6 @@ public class ToUnityStringWithRevision
     [TestCaseSource(nameof(Versions))]
     public void InputEqualsOutput(string unityVersionWithRevision)
     {
-        Assert.AreEqual(unityVersionWithRevision, Core.ProjectVersion.FromProjectVersionTXTSyntax(unityVersionWithRevision).ToUnityStringWithRevision());
+        Assert.That(Core.ProjectVersion.FromProjectVersionTXTSyntax(unityVersionWithRevision).ToUnityStringWithRevision(), Is.EqualTo(unityVersionWithRevision));
     }
 }

@@ -69,7 +69,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
             using var streamReader = new StreamReader(manifestContentStream);
             var manifestContent = streamReader.ReadToEnd();
             var actualOutput = UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent).dependencies;
-            Assert.AreEqual(versionByPackage, actualOutput);
+            Assert.That(actualOutput, Is.EqualTo(versionByPackage));
         }
 
         [TestCase]
@@ -92,7 +92,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
                 },
                 testables = new List<string>() { "com.unity.inputsystem" }
             });
-            Assert.AreEqual(manifestContent, actualOutput);
+            Assert.That(actualOutput, Is.EqualTo(manifestContent));
         }
 
         [TestCase]
@@ -101,13 +101,13 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
             var manifestContentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("UnityVersionBump.Core.Tests.UnitTests.UPM.Resources.GG-JointJustice-manifest.json");
             using var streamReader = new StreamReader(manifestContentStream);
             var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()))!;
-            Assert.AreEqual(manifestContent, UnityVersionBump.Core.UPM.ManifestParser.Generate(UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent)));
+            Assert.That(manifestContent, Is.EqualTo(UnityVersionBump.Core.UPM.ManifestParser.Generate(UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent))));
         }
 
         [TestCase]
         public void IsDeterministicStartingFromDependenciesObject()
         {
-            Assert.AreEqual(versionByPackage, UnityVersionBump.Core.UPM.ManifestParser.Parse(UnityVersionBump.Core.UPM.ManifestParser.Generate(new Manifest() { dependencies = versionByPackage })).dependencies);
+            Assert.That(versionByPackage, Is.EqualTo(UnityVersionBump.Core.UPM.ManifestParser.Parse(UnityVersionBump.Core.UPM.ManifestParser.Generate(new Manifest() { dependencies = versionByPackage })).dependencies));
         }
 
         [TestCase]
@@ -118,8 +118,8 @@ namespace UnityVersionBump.Core.Tests.UnitTests.UPM
             var manifestContent = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(streamReader.ReadToEnd()))!;
             var manifest = UnityVersionBump.Core.UPM.ManifestParser.Parse(manifestContent);
 
-            Assert.AreEqual(Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT, manifest.GetRegistryForPackage("com.unity.2d.tilemap"));
-            Assert.AreEqual("https://package.openupm.com", manifest.GetRegistryForPackage("com.inklestudios.ink-unity-integration"));
+            Assert.That(manifest.GetRegistryForPackage("com.unity.2d.tilemap"), Is.EqualTo(Manifest.UNITY_DEFAULT_PACKAGE_REPOSITORY_ROOT));
+            Assert.That(manifest.GetRegistryForPackage("com.inklestudios.ink-unity-integration"), Is.EqualTo("https://package.openupm.com"));
         }
     }
 }

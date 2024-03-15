@@ -46,15 +46,15 @@ class ExistingOutdatedPRs
         commitInfo.PullRequestLabels = labels;
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
 
-        Assert.IsNotEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Not.Empty);
     }
 
     [TestCaseSource(nameof(_labels))]
@@ -66,15 +66,15 @@ class ExistingOutdatedPRs
         commitInfo.PullRequestLabels = labels;
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
 
-        Assert.IsNotEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Not.Empty);
     }
 
     [TestCaseSource(nameof(_labels))]
@@ -86,15 +86,15 @@ class ExistingOutdatedPRs
         commitInfo.PullRequestLabels = labels;
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
 
-        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Empty);
     }
 
     [TestCaseSource(nameof(_labels))]
@@ -106,15 +106,15 @@ class ExistingOutdatedPRs
         commitInfo.PullRequestLabels = labels;
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNotNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Not.Null);
 
-        Assert.IsEmpty(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
+        Assert.That(await Core.EditorPullRequestManager.CreatePullRequestIfTargetVersionNewer(
             mockedHTTPClient,
             commitInfo,
             repositoryInfo,
             currentVersion,
             highestVersion
-        ));
+        ), Is.Empty);
     }
 
     [TestCaseSource(nameof(_labels))]
@@ -130,7 +130,7 @@ class ExistingOutdatedPRs
         Assert.ThrowsAsync<HttpRequestException>(async () =>
         {
             var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(failingClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-            Assert.IsNotNull(alreadyUpToDatePR);
+            Assert.That(alreadyUpToDatePR, Is.Not.Null);
         });
     }
 
@@ -147,7 +147,7 @@ class ExistingOutdatedPRs
         Assert.ThrowsAsync<HttpRequestException>(async () =>
         {
             var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(failingClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-            Assert.IsNotNull(alreadyUpToDatePR);
+            Assert.That(alreadyUpToDatePR, Is.Not.Null);
         });
     }
 
@@ -164,7 +164,7 @@ class ExistingOutdatedPRs
         Assert.ThrowsAsync<HttpRequestException>(async () =>
         {
             var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(failingClient, commitInfo, repositoryInfo, currentVersion, highestVersion);
-            Assert.IsNotNull(alreadyUpToDatePR);
+            Assert.That(alreadyUpToDatePR, Is.Not.Null);
         });
     }
 }

@@ -20,7 +20,7 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.FromProjectVersio
             {
                 var laterRelease = OrderedReleases[i - 1];
                 var earlierRelease = OrderedReleases[i];
-                Assert.Less(earlierRelease, laterRelease);
+                Assert.That(earlierRelease, Is.LessThan(laterRelease));
             }
         }
 
@@ -28,30 +28,30 @@ namespace UnityVersionBump.Core.Tests.UnitTests.ProjectVersion.FromProjectVersio
         public void MatchingVersionsAreEqual(Core.UnityVersion unityVersion)
         {
             // ReSharper disable once EqualExpressionComparison (needed to hit coverage)
-            Assert.IsTrue(unityVersion.Equals(unityVersion));
-            Assert.AreEqual(unityVersion, new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false));
+            Assert.That(unityVersion.Equals(unityVersion), Is.True);
+            Assert.That(new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false), Is.EqualTo(unityVersion));
 
-            Assert.AreEqual(unityVersion.GetHashCode(), unityVersion.GetHashCode());
-            Assert.AreEqual(unityVersion.GetHashCode(), new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false).GetHashCode());
+            Assert.That(unityVersion.GetHashCode(), Is.EqualTo(unityVersion.GetHashCode()));
+            Assert.That(unityVersion.GetHashCode(), Is.EqualTo(new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false).GetHashCode()));
         }
 
         [TestCaseSource(nameof(OrderedReleases))]
         public void CanCompareAgainstNull(Core.UnityVersion unityVersion)
         {
-            Assert.AreEqual(1, unityVersion.CompareTo(null));
-            Assert.AreEqual(1, unityVersion.CompareTo("not same type"));
+            Assert.That(unityVersion.CompareTo(null), Is.EqualTo(1));
+            Assert.That(unityVersion.CompareTo("not same type"), Is.EqualTo(1));
         }
 
         [TestCase]
         public void CanSortReleases()
         {
-            CollectionAssert.AreEqual(OrderedReleases, OrderedReleases.Reverse().OrderByDescending(version => version));
+            Assert.That(OrderedReleases, Is.EqualTo(OrderedReleases.Reverse().OrderByDescending(version => version)));
         }
 
         [TestCaseSource(nameof(OrderedReleases))]
         public void SameInputCausesSameOutput(Core.UnityVersion unityVersion)
         {
-            Assert.AreEqual(new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false), new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false));
+            Assert.That(new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false), Is.EqualTo(new Core.UnityVersion(unityVersion.ToUnityString(), unityVersion.Revision, false)));
         }
     }
 }

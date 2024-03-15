@@ -66,7 +66,7 @@ class EdgeCases
         Core.UnityVersion? highestVersion = null;
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, _commitInfo, _repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
     }
 
     [TestCase]
@@ -78,7 +78,7 @@ class EdgeCases
         Core.UnityVersion? highestVersion = null;
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, _commitInfo, _repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
     }
 
     [TestCase]
@@ -90,6 +90,6 @@ class EdgeCases
         Core.UnityVersion? highestVersion = null;
 
         var alreadyUpToDatePR = await Core.EditorPullRequestManager.CleanupAndCheckForAlreadyExistingPR(mockedHTTPClient, _commitInfo, _repositoryInfo, currentVersion, highestVersion);
-        Assert.IsNull(alreadyUpToDatePR);
+        Assert.That(alreadyUpToDatePR, Is.Null);
     }
 }
